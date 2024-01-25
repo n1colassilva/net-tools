@@ -1,5 +1,7 @@
-import source.user_interface as ui
-import source.console_messages as console
+import sys
+from termcolor import colored as clr
+import user_interface as ui
+import console_messages as console
 
 
 def main():
@@ -7,24 +9,24 @@ def main():
     while True:
         user_input = input()
 
-        user_input.split()
+        arguments = user_input.split()
 
-        match user_input[0]:
+        match arguments[0]:
             case "help":
-                if user_input[1] == "":
+                if arguments[1] == "":
                     ui.display_help()
                 else:
                     ...  # todo advanced help implementation
 
             case "scan":
-                match user_input[1]:
+                match arguments[1]:
                     case "ip":
-                        # ICMP the user_input[2]
+                        # ICMP the arguments[2]
                         ...
                     case "range":
-                        # ICMP from user_input[2] to user_input[3]
-                        # check if there is a user_input[3]
-                        if user_input[3] == "":
+                        # ICMP from arguments[2] to arguments[3]
+                        # check if there is a arguments[3]
+                        if arguments[3] == "":
                             console.error("Second ip not passed")
                             console.hint(
                                 "Type 'scan help' to learn about the scan functions"
@@ -37,3 +39,12 @@ def main():
                         console.hint(
                             "Type 'scan help' to learn about the scan functions"
                         )
+            case "exit":
+                sys.exit(0)
+            case _:
+                print(clr(f"{arguments[0]} is not a valid command", "green"))
+                console.hint("Type 'help' to see available commands")
+
+
+if __name__ == "__main__":
+    main()
