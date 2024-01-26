@@ -6,7 +6,7 @@ from termcolor import colored as clr
 # Show splash screen
 def display_splash():
     """Prints out the splash screen"""
-    print(clr(" NET TOOLS ", "black", "on_white"))
+    print(clr("* NET TOOLS *", "black", "on_white", ["bold"]))
     print(f"Version 0.0.1 {clr("alpha","green")}")
     print("")
     print("MIT license")
@@ -24,9 +24,16 @@ def diplay_user_prompt():
         domain = "Home"
     
     print(
-        f"{username} @ {domain}"
+        f"\n{clr(username, "light_blue", attrs=["bold"])}"
+        " @ "
+        f"{clr(domain,"light_magenta",attrs=["bold"])}"
     )
-    print(">",end="")
+    print("> ",end="")
+
+    user_input = input()
+    print("")
+
+    return user_input
 
 
 
