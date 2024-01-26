@@ -1,13 +1,13 @@
 import sys
 from termcolor import colored as clr
 import user_interface as ui
-import console_messages as console
+from console_messages import console_msg
 
 
 def main():
     ui.display_splash()  # Initial splash screen text
     while True:
-        user_input = input()
+        user_input = ui.diplay_user_prompt()
 
         arguments = user_input.split()
 
@@ -27,23 +27,24 @@ def main():
                         # ICMP from arguments[2] to arguments[3]
                         # check if there is a arguments[3]
                         if arguments[3] == "":
-                            console.error("Second ip not passed")
-                            console.hint(
-                                "Type 'scan help' to learn about the scan functions"
+                            console_msg("error", "Second ip not passed")
+                            console_msg(
+                                "hint",
+                                "Type 'scan help' to learn about the scan functions",
                             )
                     case "help":
                         # Show relevant help
                         ...
                     case _:
-                        console.error("No specified 'scan' function.")
-                        console.hint(
-                            "Type 'scan help' to learn about the scan functions"
+                        console_msg("error", "No specified 'scan' function.")
+                        console_msg(
+                            "hint", "Type 'scan help' to learn about the scan functions"
                         )
             case "exit":
                 sys.exit(0)
             case _:
                 print(clr(f"{arguments[0]} is not a valid command", "green"))
-                console.hint("Type 'help' to see available commands")
+                console_msg("hint", "Type 'help' to see available commands")
 
 
 if __name__ == "__main__":
