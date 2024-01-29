@@ -2,6 +2,7 @@ import sys
 from termcolor import colored as clr
 import user_interface as ui
 from console_messages import console_msg
+from ip_scan import icmp_scan
 
 
 def main():
@@ -22,7 +23,9 @@ def main():
                 match arguments[1]:
                     case "ip":
                         # ICMP the arguments[2]
-                        ...
+                        # Todo flag implementation
+                        icmp_scan(arguments[2])
+
                     case "range":
                         # ICMP from arguments[2] to arguments[3]
                         # check if there is a arguments[3]

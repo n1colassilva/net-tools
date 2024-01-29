@@ -1,4 +1,13 @@
+"""
+File dedicated to the IPAdress class
+"""
+
+
 class IPAddress:
+    """
+    Defines an ip adress, has methods to test and separate it into it's constituent octets
+    """
+
     def __init__(self, address: str):
         self.address = address
 
