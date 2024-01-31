@@ -1,50 +1,25 @@
-import socket
-import struct
-import time
 from utils.fira_code_loading_bar.loading_bar import generate_loading_bar as loading_bar
 from utils.manyprint.mprint import multi_print as printm
+from ping3 import ping  # TODO make pylance stop complaining about lack of a stub
 
 
-def _send_ping_request(destination_ip: str, count: int = 4, timeout: float = 30):
-    icmp_socket = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_ICMP)
-
-    icmp_header = struct.pack("!BBHHH", 8, 0, 0, 1, 1)
-    icmp_checksum = 0
-    icmp_packet = icmp_header + struct.pack("H", icmp_checksum) + b"HelloPing"
-
+def _send_ping_request(destination_ip: str, count: int = 4, timeout: int = 30):
     received_packets = 0
     packet_loss = 0
 
     for _ in range(count):
-        icmp_socket.sendto(icmp_packet, (destination_ip, 1))
+        response = ping(destination_ip, timeout=timeout)
 
-        icmp_socket.settimeout(timeout)
-
-        try:
-            start_time = time.time()
-            _response, addr = icmp_socket.recvfrom(1024)
-            end_time = time.time()
-
-            round_trip_time = (end_time - start_time) * 1000  # Convert to milliseconds
-            print(f"Received ICMP response from {addr[0]} in {round_trip_time:.2f} ms")
+        if response is not None:  # TODO reffer to line 3's TODO
+            print(f"Received ICMP response from {destination_ip} in {response} ms")
             received_packets += 1
-        except socket.timeout:
+        else:
             print("Request timed out")
             packet_loss += 1
-
-    icmp_socket.close()
 
     packet_loss_percentage = (packet_loss / count) * 100 if count > 0 else 0
 
     return destination_ip, count, received_packets, packet_loss, packet_loss_percentage
-
-    # {
-    #     "destination_ip": destination_ip,
-    #     "sent_packets": count,
-    #     "received_packets": received_packets,
-    #     "packet_loss": packet_loss,
-    #     "packet_loss_percentage": packet_loss_percentage,
-    # }
 
 
 def icmp_scan(*ip_addresses: str, verbose: bool = False, amount: int = 4) -> None:
@@ -60,7 +35,7 @@ def icmp_scan(*ip_addresses: str, verbose: bool = False, amount: int = 4) -> Non
         (
             destination_ip,
             count,
-            recieved_packets,
+            received_packets,
             packets_lost,
             packet_loss_percentage,
         ) = _send_ping_request(ip, amount)
@@ -69,18 +44,20 @@ def icmp_scan(*ip_addresses: str, verbose: bool = False, amount: int = 4) -> Non
         if verbose is True:
             # TODO: colorize numbers according to how bad they are
             printm(
+                "",
                 "RESULTS:",
                 f"Pinged: {destination_ip}",
                 f"Sent: {count}",
-                f"Recieved: {recieved_packets}",
+                f"Recieved: {received_packets}",
                 f"Packets lost: {packets_lost}",
                 f"Packet loss: {packet_loss_percentage}%",
-                loading_bar(packets_lost, count, count * 2),
+                loading_bar(count - packets_lost, count, 10),
             )
         else:
             printm(
+                "",
                 "RESULTS",
                 f"Pinged: {destination_ip}",
                 f"Packet loss: {packet_loss_percentage}%",
-                loading_bar(packets_lost, count, count * 2),
+                loading_bar(count - packets_lost, count, 10),
             )

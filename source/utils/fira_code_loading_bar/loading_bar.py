@@ -6,7 +6,9 @@ based on the current progress.
 """
 
 
-def generate_loading_bar(current_value: float, total_value: float, bar_length: int = 100) -> str:
+def generate_loading_bar(
+    current_value: float, total_value: float, bar_length: int = 100
+) -> str:
     """
     Generate a loading bar string based on the current progress.
 
@@ -30,14 +32,15 @@ def generate_loading_bar(current_value: float, total_value: float, bar_length: i
     progress: float = (current_value / total_value) * bar_length
 
     # building the string
-    loading_bar = start_empty_char + \
-        (mid_empty_char * (bar_length - 2)) + end_empty_char
+    loading_bar = (
+        start_empty_char + (mid_empty_char * (bar_length - 2)) + end_empty_char
+    )
 
     # filling the string correctly
     string_list = list(loading_bar)
 
     # +1 to ensure it gets filled (i dont fully comprehend nor care why this fix is needed)
-    for i_char in range(int(progress+1)):
+    for i_char in range(int(progress)):  # had to change progress+1 to just progress -N
         char: str = string_list[i_char]
         if char == start_empty_char:
             string_list[i_char] = start_filled_char
@@ -46,4 +49,4 @@ def generate_loading_bar(current_value: float, total_value: float, bar_length: i
         elif char == end_empty_char:
             string_list[i_char] = end_filled_char
 
-    return ''.join(string_list)
+    return "".join(string_list)
