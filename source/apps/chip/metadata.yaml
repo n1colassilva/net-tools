@@ -1,0 +1,15 @@
+name: chip
+description: IP pinging program
+flags:
+  -v/--Verbose:
+    value: null
+    description: Enables verbose mode, which includes more details about the ping
+  -a/--Amount:
+    value: int
+    description: Changes amount of ICMP pings to send
+  -r/--Range:
+    value: null
+    description: Enables IP range mode, so 2 IPs can be passed and the program wil scan the range between them (including them)
+  -m/--Multiple:
+    value: null
+    description: Enables multiple IPs mode, pass as many IPs as you wish and they will be pinged individually

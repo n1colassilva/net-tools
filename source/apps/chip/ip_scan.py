@@ -1,5 +1,7 @@
-from utils.fira_code_loading_bar.loading_bar import generate_loading_bar as loading_bar
-from utils.manyprint.mprint import multi_print as printm
+from source.utils.fira_code_loading_bar.loading_bar import (
+    generate_loading_bar as loading_bar,
+)
+from source.utils.manyprint.mprint import multi_print as printm
 from ping3 import ping  # TODO make pylance stop complaining about lack of a stub
 
 

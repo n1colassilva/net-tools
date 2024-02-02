@@ -1,6 +1,6 @@
 """Tests for IPAdress class"""
 import unittest
-from source.ip import IPAddress
+from source.apps.chip.lib.ip import IPAddress
 
 
 class TestIPAdress(unittest.TestCase):
