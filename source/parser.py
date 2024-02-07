@@ -1,49 +1,44 @@
+from typing import Any, Dict, Union
 import yaml
 
+parsed_command: dict[str, str | dict[str, Any] | list[Any]] = {
+    "command": command,
+    "flags": {},
+    "args": [],
+}
+class command_metadata:
 
-def parse(string: str):
-    """
-    Parses a string into it's arguments, flags, flag arguments and commands.
+    def __init__(self, name, flag_data) -> None:
+        pass
+    
 
-    Args:
-        string (str): user input string.
-    """
-    input_list = string.split(" ")
-    command = input_list.pop(0)
+def get_metadata() -> Dict[str, Union[str, Dict[str, Union[None, type, str]]]]:
 
-    # pretend we took the command, looked through the metadata files and found the correct function
     file_path = "source\\apps\\chip\\metadata.yaml"
+
     with open(file_path, "r", encoding="utf-8") as file:
-        #
-        # expected structure for yaml data
+        metadata = yaml.safe_load(file)
 
-        # name: str
-        # description: str
-        # flags:
-        #     -f/--foo:
-        #         value: any (value we will look for)
-        #         description: str
-        #     -b/--bar:
-        #          value:
-        #          ...
-        yaml_data = yaml.safe_load(file)
+    # now we parse said metadata
+        
+    metadata.   
 
-    name = yaml_data.get("name")
-    flag_names = yaml_data["flags"].keys()
-    flags = yaml_data.get("flags")
-
-    #if command matches the name
-    if command != name:
-        return None
-    #for every word the user input
-    for i,input in enumerate(input_list):
-        for flag in flag_names:
-            if input != flag:
-                continue
-            flag_data = flags.get(flag)
+    return metadata
 
 
+def parse_input(
+    user_input: str, metadata: Dict[str, Union[str, Dict[str, Union[None, type, str]]]]
+):
 
+    inputs = user_input.split("")
 
-if __name__ == "__main__":
-    parse("chip -a 5 192.168.0.14")
+    command = inputs.pop(0)
+
+    # Defining our Abstract Syntax Tree
+    parsed_command: dict[str, str | dict[str, Any] | list[Any]] = {
+        "command": command,
+        "flags": {},
+        "args": [],
+    }
+
+    
