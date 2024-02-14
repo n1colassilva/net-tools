@@ -1,7 +1,7 @@
-from source.utils.fira_code_loading_bar.loading_bar import (
+from utils.fira_code_loading_bar.loading_bar import (
     generate_loading_bar as loading_bar,
 )
-from source.utils.manyprint.mprint import multi_print as printm
+from utils.manyprint.mprint import multi_print as printm
 from ping3 import ping  # TODO make pylance stop complaining about lack of a stub
 
 
@@ -24,7 +24,7 @@ def _send_ping_request(destination_ip: str, count: int = 4, timeout: int = 30):
     return destination_ip, count, received_packets, packet_loss, packet_loss_percentage
 
 
-def icmp_scan(*ip_addresses: str, verbose: bool = False, amount: int = 4) -> None:
+def icmp_scan(ip_addresses: list[str], verbose: bool = False, amount: int = 4) -> None:
     """
     Sends an ICMP echo request to the designated adress(es)
 
