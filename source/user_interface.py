@@ -28,9 +28,9 @@ def diplay_user_prompt() -> str:
     if isinstance(domain,type(None)):
         domain = "Home"
     print(
-        f"\n{clr(username, "light_blue", attrs=["bold"])}"
+        f"\n{clr(username, "blue", attrs=["bold"])}"
         " @ "
-        f"{clr(domain,"light_magenta",attrs=["bold"])}"
+        f"{clr(domain,"magenta",attrs=["bold"])}"
     )
     print("> ",end="")
 
