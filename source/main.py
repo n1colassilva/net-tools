@@ -1,4 +1,3 @@
-from parsing import parse
 from tasker import task
 import user_interface as ui
 
@@ -11,10 +10,7 @@ def main():
     while True:
 
         user_input = ui.diplay_user_prompt()
-
-        command, arguments = parse(user_input)
-
-        task(command, arguments)
+        task(user_input)
 
 
 if __name__ == "__main__":

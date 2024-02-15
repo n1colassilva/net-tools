@@ -2,7 +2,11 @@ from apps.chip.ip_scan import icmp_scan
 from console_messages import console_msg
 
 
-def task(command: str, arguments: list[str]):
+def task(usr_input:str):
+    # Parsing the user input
+    arguments = usr_input.split(" ")
+
+    command = arguments.pop(0)
 
     match command:
         case "chip":
