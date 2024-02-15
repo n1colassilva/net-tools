@@ -41,6 +41,7 @@ def task(usr_input:str):
                 i += 1
 
             icmp_scan(ip_addresses, verbose, amount)
-
+        case "chil":
+            
         case _:
             console_msg("error", "Unknown command")
