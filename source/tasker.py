@@ -2,7 +2,7 @@ from apps.chip.ip_scan import icmp_scan
 from console_messages import console_msg
 
 
-def task(usr_input:str):
+def task(usr_input: str):
     # Parsing the user input
     arguments = usr_input.split(" ")
 
@@ -42,6 +42,6 @@ def task(usr_input:str):
 
             icmp_scan(ip_addresses, verbose, amount)
         case "chil":
-            
+            ...
         case _:
             console_msg("error", "Unknown command")
