@@ -1,15 +1,9 @@
-# Example of an IP address list
-
-# Define a table for storing IP addresses
 [ip_addresses]
-
-# Each IP address entry is represented as a nested table
 [[ip_addresses.entry]]
 address = "192.168.0.1"
-name = "Server 1"                        # Optional: Name or label for the address
-description = "Main server for activity" # Optional: additional information about the IP address
+name = "Server 1"
+description = "Main server for activity"
 
-# Another IP address entry
 [[ip_addresses.entry]]
 address = "192.168.0.2"
 
@@ -18,4 +12,10 @@ address = "192.168.0.3"
 name = "Test server"
 
 [[ip_addresses.entry]]
-description = "mistake" # Do not do this please
+description = "mistake"
+
+[[ip_addresses.entry]]
+address = "192.168.0.4"
+name = "Test Server 2"
+description = "Secondary test server"
+
