@@ -1,5 +1,5 @@
 from apps.chip.ip_scan import icmp_scan
-from console_messages import console_msg
+from utils.console_messages import console_msg
 
 
 def task(usr_input: str):

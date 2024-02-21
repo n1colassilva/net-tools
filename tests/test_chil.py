@@ -3,7 +3,7 @@ Tests chil app
 """
 
 import unittest
-from ip_list import add_entry, load_toml, _build_file_path
+from source.apps.chil.lib.ip_list import add_entry
 
 
 class TestAddEntry(unittest.TestCase):
