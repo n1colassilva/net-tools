@@ -1,21 +1,15 @@
 [ip_addresses]
 [[ip_addresses.entry]]
-address = "192.168.0.1"
+address = "192.168.0.1"                  #ideal entry
 name = "Server 1"
 description = "Main server for activity"
 
 [[ip_addresses.entry]]
-address = "192.168.0.2"
+address = "192.168.0.2" # just an adress is fine
 
 [[ip_addresses.entry]]
-address = "192.168.0.3"
+address = "192.168.0.3" # same for adtess and name
 name = "Test server"
 
 [[ip_addresses.entry]]
-description = "mistake"
-
-[[ip_addresses.entry]]
-address = "192.168.0.4"
-name = "Test Server 2"
-description = "Secondary test server"
-
+description = "mistake" # do not do this

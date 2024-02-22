@@ -1,0 +1,15 @@
+[ip_addresses]
+[[ip_addresses.entry]]
+address = "192.168.0.1"
+name = "Server 1"
+description = "Main server for activity"
+
+[[ip_addresses.entry]]
+address = "192.168.0.2"
+
+[[ip_addresses.entry]]
+address = "192.168.0.3"
+name = "Test server"
+
+[[ip_addresses.entry]]
+description = "mistake"
