@@ -2,11 +2,16 @@ from apps.chip.ip_scan import icmp_scan
 from utils.console_messages import console_msg
 
 
+def input_parser(usr_input: str) -> tuple[str, list[str]]:
+    """Divides input into the main command and it's arguments"""
+    arguments = usr_input.split(" ")
+    command = arguments.pop(0)
+    return command, arguments
+
+
 def task(usr_input: str):
     # Parsing the user input
-    arguments = usr_input.split(" ")
-
-    command = arguments.pop(0)
+    command, arguments = input_parser(usr_input)
 
     match command:
         case "chip":

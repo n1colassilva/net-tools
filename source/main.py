@@ -1,5 +1,5 @@
 from tasker import task
-import source.user_interface as ui
+import user_interface as ui
 
 
 def main():

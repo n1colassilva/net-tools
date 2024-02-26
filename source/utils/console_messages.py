@@ -1,6 +1,7 @@
 """
 Module for printing errors, warnings and hints
 """
+
 from typing import Literal
 from termcolor import colored
 
@@ -15,7 +16,7 @@ TAGS: dict[Tag, str] = {
 
 
 # msg standing for MeSsaGe and not MonoSodium Glutamate
-def console_msg(tag: Tag, message: str):
+def console_msg(tag: Tag, message: str) -> None:
     """
     general purpose console message printer function.
 

@@ -1,5 +1,6 @@
 import getpass
 import os
+from typing import Optional
 from termcolor import colored as clr
 
 
@@ -15,7 +16,7 @@ def display_splash():
     print(f"Type {clr("'help'","green" )} to see available commands\n")
     print("")
 
-def diplay_user_prompt() -> str:
+def diplay_user_prompt(_app_name:Optional[str]="") -> str:
     """
     Displays a writing prompt for the user
     
@@ -32,7 +33,7 @@ def diplay_user_prompt() -> str:
         " @ "
         f"{clr(domain,"magenta",attrs=["bold"])}"
     )
-    print("> ",end="")
+    print(_app_name, "> ",end="")
 
     user_input = input()
     print("")
