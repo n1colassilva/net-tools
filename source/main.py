@@ -9,7 +9,7 @@ def main():
 
     while True:
 
-        user_input = ui.diplay_user_prompt()
+        user_input = ui.display_user_prompt()
         task(user_input)
 
 

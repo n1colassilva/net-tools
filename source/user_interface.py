@@ -16,7 +16,7 @@ def display_splash():
     print(f"Type {clr("'help'","green" )} to see available commands\n")
     print("")
 
-def diplay_user_prompt(_app_name:Optional[str]="") -> str:
+def display_user_prompt(_app_name:Optional[str]="") -> str:
     """
     Displays a writing prompt for the user
     

@@ -1,12 +1,13 @@
 from termcolor import colored as clr
 import sys
+from apps.chil.lib.chil_data_print import dorlprint
 
 sys.path.append("../../../../source")
 from apps.chil.lib.ip_list import load_toml, add_entry
 from utils.manyprint.mprint import multi_print as printm
 from utils import console_messages
 from utils.console_messages import console_msg
-from user_interface import diplay_user_prompt as prompt
+from user_interface import display_user_prompt as prompt
 from tasker import input_parser
 
 class ChilTerm():
@@ -15,6 +16,8 @@ class ChilTerm():
     """
     def __init__(self):
         self.file_name:str = ""
+        self.APP_NAME = f"{clr("chil 󰻽","white","on_blue",["bold"])}"
+        self.display_name = self.APP_NAME
 
     def run(self):
         """Main terminal loop"""
@@ -26,22 +29,24 @@ class ChilTerm():
 
         while keep_running:
 
-            # We will append the file name onto the app name to show user current file
-            # inlay hints may give you an aneurism
-            app_name = f"{clr("chil 󰻽","white","on_blue",["bold"])}"
-            full_path = app_name + self.file_name
+            if self.file_name != "":
+                self.display_name = (
+                    self.APP_NAME +
+                    " 󰁔 " +
+                    "" +
+                    clr(self.file_name, attrs=["bold"])
+                )
 
-            user_input = prompt(full_path)
-
+            user_input = prompt(self.display_name)
             command, arguments = input_parser(user_input)
 
             match command:
                 case "select":
                     self.select_file(arguments[0])
                 case "view":
-                    ...
+                    self.display_file()
                 case "insert":
-                    ...
+                    self.insert() # A writing/fanfic joke goes here.
                 case "remove":
                     ...
                 case "create":
@@ -50,6 +55,7 @@ class ChilTerm():
                     ...
                 case _:
                     ...
+
 
     def _splash(self):
         """Prints chil's own splash screen"""
@@ -63,6 +69,7 @@ class ChilTerm():
             f"Type {clr("'help'","green" )} to see available commands\n"
         )
 
+
     def select_file(self, file_name:str):
         """Tries to find the toml and sets it as file_name"""
         data = load_toml(file_name)
@@ -75,36 +82,42 @@ class ChilTerm():
     def display_file(self):
         """Shows a file's data"""
         data = load_toml(self.file_name)
+
+        if data is None:
+            console_msg("error","Empty file.")
+            return
+
         printm(
             f"{clr(" " + self.file_name,"cyan")}"
             "",
             "----------",
+            dorlprint(data),
             "----------",
             "",
         )
 
 
-# class chil:
-#     """prototype"""
+    def insert(self):
+        
+        self.display_name = (
+            self.APP_NAME +
+            " 󰁔 " +
+            clr("󰏪", "green") +
+            " " +
+            clr("" + self.file_name, "black", "on_white")
+        )
 
-#     def __init__(self) -> None:
-#         # self.filename = select_file()
-#         ...
+        usr_dict:dict[str,str]
 
-#     def select_file(self):
-#         """Placeholder"""
+        command:str= ""
+        while command != "done":
+            usr_input = prompt(self.display_name)
 
-#     def show_in_editor(self):
-#         """placeholder"""
+            command, args = input_parser(usr_input)
 
-#     def insert(self, _data: str):
-#         """placeholder"""
-
-#     def remove(self, _ip: str):
-#         """placeholder"""
-
-#     def create(self, _filename: str):
-#         """placeholder"""
-
-#     def delete(self, _filename: str):
-#         """placeholder"""
+            match command:
+                case "done":
+                    # here we break because the while will handle it
+                    break
+                case "ip":
+                    usr_dict 
