@@ -10,6 +10,7 @@ def input_parser(usr_input: str) -> tuple[str, list[str]]:
 
 
 def task(usr_input: str):
+    """Runs the program the user input tells it to"""
     # Parsing the user input
     command, arguments = input_parser(usr_input)
 

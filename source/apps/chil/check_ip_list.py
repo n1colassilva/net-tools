@@ -1,9 +1,12 @@
+import array
+from ast import arg
+import ipaddress
 from termcolor import colored as clr
 import sys
 from apps.chil.lib.chil_data_print import dorlprint
 
 sys.path.append("../../../../source")
-from apps.chil.lib.ip_list import load_toml, add_entry
+from apps.chil.lib.ip_list import build_file_path, load_toml, add_entry
 from utils.manyprint.mprint import multi_print as printm
 from utils import console_messages
 from utils.console_messages import console_msg
@@ -98,7 +101,44 @@ class ChilTerm():
 
 
     def insert(self):
-        
+        """
+        Inserts and manages user input, collecting data into a dictionary.
+
+        This function prompts the user for input repeatedly until the user enters
+        "done". It parses the input using the `input_parser` function and takes action
+        based on the provided command and arguments.
+
+        Supported commands:
+
+        * **done:** Exits the input loop.
+        * **ip**: Takes an IP address as an argument and stores it in the dictionary
+            with the key "ip". Validates the IP address using the `ipaddress` module and
+            provides error messages for invalid input.
+        * **name**: Takes a name as an argument and stores it in the dictionary
+            with the key "name".
+        * **description**: Takes a description as an argument and stores it in the 
+            dictionary with the key "description". Joins multiple words using 
+            " " as the separator.
+        * **custom**: Takes a custom key and value as arguments and stores them in the 
+            dictionary with the provided key.
+        * **write**: Takes a file path as an argument and uses the `build_file_path` 
+            function to construct the complete path. Then, calls the `add_entry` 
+            function to write the collected data (dictionary) to the specified file.
+            Sets the `command` to "none" to prevent further input after writing.
+        * **help**: Not implemented yet, but should display instructions on how to use
+            the program.
+
+        For any other unknown command, the function displays an error message and 
+        provides a hint to use "help" for further information.
+
+        Args:
+            self: An instance of the class containing this function.
+
+        Returns:
+            None. The function updates the internal state of the class and potentially
+            writes data to a file, but doesn't return any value.
+        """
+
         self.display_name = (
             self.APP_NAME +
             " 󰁔 " +
@@ -107,7 +147,7 @@ class ChilTerm():
             clr("" + self.file_name, "black", "on_white")
         )
 
-        usr_dict:dict[str,str]
+        usr_dict:dict[str,str] = {}
 
         command:str= ""
         while command != "done":
@@ -115,9 +155,28 @@ class ChilTerm():
 
             command, args = input_parser(usr_input)
 
-            match command:
+            match command.lower():
                 case "done":
                     # here we break because the while will handle it
                     break
                 case "ip":
-                    usr_dict 
+                    # Checking for valid ip adress
+                    try:
+                        ipaddress.ip_address(args[0])
+                    except ValueError:
+                        console_msg("error","Invalid ip adress")
+                    finally:
+                        usr_dict["ip"] = args[0]
+                case "name":
+                    usr_dict["name"] = args[1]
+                case "description":
+                    usr_dict["description"] = " ".join(args)
+                case "custom":
+                    usr_dict[args[0]] = args[1]
+                case "write":
+                    write_path = build_file_path(args[1])
+                    add_entry(write_path,usr_dict)
+                    command = "none" # A little hacky but will get the job done
+                case _:
+                    console_msg("error", "Invalid input.")
+                    console_msg("hint", "Use 'help' to learn more")
