@@ -1,17 +1,12 @@
-import array
-from ast import arg
 import ipaddress
 from termcolor import colored as clr
-import sys
-from apps.chil.lib.chil_data_print import dorlprint
+from ...tasker import input_parser
 
-sys.path.append("../../../../source")
-from apps.chil.lib.ip_list import build_file_path, load_toml, add_entry
-from utils.manyprint.mprint import multi_print as printm
-from utils import console_messages
-from utils.console_messages import console_msg
-from user_interface import display_user_prompt as prompt
-from tasker import input_parser
+from source.apps.chil.lib.ip_list import build_file_path, load_toml, add_entry
+from source.apps.chil.lib.chil_data_print import dorlprint
+from source.utils.manyprint.mprint import multi_print as printm
+from source.utils.console_messages import console_msg
+from source.user_interface import display_user_prompt as prompt
 
 class ChilTerm():
     """

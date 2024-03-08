@@ -1,3 +1,4 @@
+from apps.chil.check_ip_list import ChilTerm
 from apps.chip.ip_scan import icmp_scan
 from utils.console_messages import console_msg
 
@@ -48,6 +49,7 @@ def task(usr_input: str):
 
             icmp_scan(ip_addresses, verbose, amount)
         case "chil":
-            ...
+            chilterm = ChilTerm()
+            chilterm.run()
         case _:
             console_msg("error", "Unknown command")
