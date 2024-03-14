@@ -9,7 +9,7 @@ from typing import Literal, Optional
 import toml
 
 
-def _build_file_path(file_name: str):
+def build_file_path(file_name: str):
     """
     Makes sure the file path includes the extension and goes intot the correct folder
     Args:
@@ -40,7 +40,7 @@ def _load_file(file_name: str, mode: OpenLiteral = "r") -> Optional[TextIOWrappe
         Optional[TextIOWrapper]: The file object if successful, else None.
     """
 
-    file_path = _build_file_path(file_name)
+    file_path = build_file_path(file_name)
 
     try:
         with open(file_path, mode, encoding="utf-8") as file:
@@ -66,7 +66,7 @@ def load_toml(
     Returns:
         Union[dict, None]: The loaded data if successful, else None.
     """
-    file_path = _build_file_path(file_name)
+    file_path = build_file_path(file_name)
     file = _load_file(file_path)
     if file:
         try:
@@ -88,7 +88,7 @@ def add_entry(file_name: str, entry: dict[str, str], _verbose: bool = False):
         _verbose (optional,bool): Whether verbose mode is enabled. Defaults to False
     """
 
-    file_path = _build_file_path(file_name)
+    file_path = build_file_path(file_name)
     # Loading TOML data
     data = load_toml(file_path, _verbose)
 
