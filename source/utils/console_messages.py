@@ -6,11 +6,12 @@ from typing import Literal
 from termcolor import colored
 
 # This is to help intellisense
-Tag = Literal["success","hint", "warning", "error"]
+Tag = Literal["success", "hint", "info", "warning", "error"]
 
 TAGS: dict[Tag, str] = {
     "success": colored("SUCCESS:", "white", "on_green"),
     "hint": colored("HINT:", "white", "on_blue"),
+    "info": colored("INFO:", "white", "on_blue"),
     "warning": colored("WARNING:", "white", "on_yellow"),
     "error": colored("ERROR:", "white", "on_red"),
 }
