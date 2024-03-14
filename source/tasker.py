@@ -1,13 +1,7 @@
 from apps.chil.check_ip_list import ChilTerm
 from apps.chip.ip_scan import icmp_scan
 from utils.console_messages import console_msg
-
-
-def input_parser(usr_input: str) -> tuple[str, list[str]]:
-    """Divides input into the main command and it's arguments"""
-    arguments = usr_input.split(" ")
-    command = arguments.pop(0)
-    return command, arguments
+from utils.input_parser import input_parser
 
 
 def task(usr_input: str):
