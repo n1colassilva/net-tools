@@ -1,4 +1,5 @@
 """Runs all tests in the tests directory"""
+
 import sys
 import unittest
 
