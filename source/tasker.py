@@ -1,5 +1,6 @@
 from apps.chil.check_ip_list import ChilTerm
 from apps.chip.ip_scan import icmp_scan
+from user_interface import display_help
 from utils.console_messages import console_msg
 from utils.input_parser import input_parser
 
@@ -45,5 +46,12 @@ def task(usr_input: str):
         case "chil":
             chilterm = ChilTerm()
             chilterm.run()
+
+        case "help":
+            display_help(arguments)
+
+        case "exit":
+            console_msg("info", "Exiting net-tools.")
+            exit(0)
         case _:
             console_msg("error", "Unknown command")
