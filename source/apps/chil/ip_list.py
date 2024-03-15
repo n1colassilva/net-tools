@@ -9,7 +9,7 @@ from typing import Literal, Optional
 import toml
 
 
-def build_file_path(file_name: str):
+def build_file_path(_file_name: Optional[str]):
     """
     Makes sure the file path includes the extension and goes intot the correct folder
     Args:
@@ -17,11 +17,18 @@ def build_file_path(file_name: str):
     Returns:
         str: A path to the supposed file
     """
-    if not file_name.endswith(".toml"):
-        file_name += ".toml"
+    list_dir = os.path.join(os.getcwd(), "source", "data", "chil", "ip_list")
 
-    file_path = os.path.join("/source/data/chil/ip_list", file_name)
+    if _file_name:
+        if not _file_name.endswith(".toml"):
+            _file_name += ".toml"
 
+        file_path = os.path.join(list_dir, _file_name)
+
+    else:
+        file_path = list_dir
+
+    print(file_path)
     return file_path
 
 
