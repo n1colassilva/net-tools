@@ -1,9 +1,9 @@
 import ipaddress
 import os
 from termcolor import colored as clr
+from apps.chil.ip_list import add_entry, build_file_path, load_toml
 from utils.input_parser import input_parser
 
-from ip_list import build_file_path, load_toml, add_entry
 from utils.toml_print import toml_data_print as tprint
 from utils.manyprint.mprint import multi_print as printm
 from utils.console_messages import console_msg
@@ -15,7 +15,6 @@ class ChilTerm:
     def __init__(self):
         self.file_name: str = ""
         self.APP_NAME = f"{clr('chil 󰻽','white','on_blue',['bold'])}"
-        # self.APP_NAME = f"{clr('chil 󰻽','white','on_blue',['bold'])}"
         self.display_name = self.APP_NAME
 
     def run(self):
@@ -48,7 +47,7 @@ class ChilTerm:
                 case "create":
                     self.create(arguments[0])
                 case "drop":
-                    ...
+                    self.drop(arguments[0])
                 case _:
                     ...
 
@@ -97,29 +96,6 @@ class ChilTerm:
         This function prompts the user for input repeatedly until the user enters
         "done". It parses the input using the `input_parser` function and takes action
         based on the provided command and arguments.
-
-        Supported commands:
-
-        * **done:** Exits the input loop.
-        * **ip**: Takes an IP address as an argument and stores it in the dictionary
-            with the key "ip". Validates the IP address using the `ipaddress` module and
-            provides error messages for invalid input.
-        * **name**: Takes a name as an argument and stores it in the dictionary
-            with the key "name".
-        * **description**: Takes a description as an argument and stores it in the
-            dictionary with the key "description". Joins multiple words using
-            " " as the separator.
-        * **custom**: Takes a custom key and value as arguments and stores them in the
-            dictionary with the provided key.
-        * **write**: Takes a file path as an argument and uses the `build_file_path`
-            function to construct the complete path. Then, calls the `add_entry`
-            function to write the collected data (dictionary) to the specified file.
-            Sets the `command` to "none" to prevent further input after writing.
-        * **help**: Not implemented yet, but should display instructions on how to use
-            the program.
-
-        For any other unknown command, the function displays an error message and
-        provides a hint to use "help" for further information.
 
         Args:
             self: An instance of the class containing this function.
@@ -171,7 +147,7 @@ class ChilTerm:
                     console_msg("hint", "Use 'help' to learn more")
 
     def remove(self) -> None:
-        """Stars its own little cli to remove keys from the already picked file"""
+        """Starts its own little cli to remove keys from the already picked file"""
 
         self.display_name = (
             self.APP_NAME
@@ -215,13 +191,13 @@ class ChilTerm:
         """Creates a new file, warns if if already exists"""
 
         if os.path.exists(build_file_path(file_name)):
+            console_msg("warning", f"{file_name} already exists!")
+        else:
             # Just opening in write mode does the trick
             with open(build_file_path(file_name), "w", encoding="utf-8") as file:
                 file.close()
 
             console_msg("success", f"{file_name} was created.")
-        else:
-            console_msg("warning", f"{file_name} already exists!")
 
     def drop(self, file_name: str) -> None:
         filepath = build_file_path(file_name)
