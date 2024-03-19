@@ -1,42 +1,103 @@
+"""
+Code pertaining to the CLI and related classes
+
+Handles a base cli program that is made to be reliable and flexible, some would call it a framework
+"""
+
 from typing import Any, Callable
 from user_interface import display_user_prompt
-import argparse
 
 
 class CLI:
     """Base class for a borrowable command-line interface."""
 
     class Command:
+        """
+        Class to create a command with it's related data
 
-        class Arg:
-            def __init__(
-                self,
-                short_name: str,
-                long_name: str,
-                type: type,
-                default_value: Any,
-                help: str,
-            ):
-                """
-                Stores an argument
+        You do need to:
+        1. Register the function
+        2. Register its arguments
+        3. Register its flags
 
-                Args:
-                    short_name       (str):     Short version of the name (ex: `-v`)
-                    long_name        (str):     Long version of the name (ex: `--Version`)
-                    type             (type):    Type of the argument (ex: `int`)
-                    default_value    (Any):     Default value (`2`)
-                    help             (str):     What should be printed out when the help tag is added (-h,--help), should cover what the argument does
-                """
-                self.short_name: str = short_name
-                self.long_name: str = long_name
-                self.type: type = type
-                self.default_value: Any = default_value
-                self.help: str = help
+        The `help_str`s will be seen by the user when they ask for help
+
+        Why are flags and arguments separate?
+        - Arguments are obligatory in nature
+        - Flags are optional, some may even take arguments of their own
+        """
 
         def __init__(self) -> None:
-            self.function: Callable[[], None]
             self.name: str
-            # self.args
+            # Callable takes any amount and type of arguments, returns Any
+            self.function: Callable[..., Any]
+            self.help_str: str
+            self.arg_data: list[dict[str, str | type[Any] | Any]]
+            self.flag_data: dict[str, Any]
+
+        def register_function(
+            self, name: str, function: Callable[..., Any], help_str: str
+        ):
+            """
+            Registers the function proper
+
+            Args:
+                name     (str):                 Name of the function, keep it to one word around
+                                                5-4 charachters
+                function (Callable[..., Any]):  The actual function we are working with
+                help_str (str):                 String containing help info
+
+            Example:
+                >>> kill_child_cli = Command()
+                >>> kill_child_cli.register_function("kchild", kill_child, "kills a child")
+            """
+            self.name = name
+            self.function = function
+            self.help_str = help_str
+
+        def register_argument(self, name: str, arg_type: type[Any], default: Any):
+            """
+            Adds an argument to the argument list
+
+            Args:
+                name     (str):         Name of the argument
+                arg_type (type[Any]):   Type the argument expects
+                default  (Any):         Default value
+            """
+            argument: dict[str, str | type[Any] | Any] = {
+                "name": name,
+                "type": arg_type,
+                "default": default,
+            }
+            self.arg_data.append(argument)
+
+        def register_flag(
+            self,
+            name: tuple[str],
+            args_amount: int,
+            args_type: type[Any],
+            help_str: str,
+        ):
+            """
+            Stores an argument
+
+            Args:
+                name             (tuple[str]):  Name of the flag (ex: `-v,--version`)
+                help             (str):         What should be printed out when the
+                help tag `-h` or `--help` is added, should cover what the argument does
+            """
+            self.flag_data: dict[str, Any] = {
+                "name": name,
+                "args_amount": args_amount,
+                "args_type": args_type,
+                "help": help_str,
+                # "arg_types": arg_types,
+                # If you get to the point where a flag gets multiple arguments of different types
+                # You messed up big time!
+                # refactor stuff, break it up of make that thing it's own function.
+                # Even if i had the patience to handle that, it would take too much effort
+                # and complexity, and in antipattern terms it's either blatantly bad or smells bad
+            }
 
     def __init__(self, _cli_name: str):
         """
