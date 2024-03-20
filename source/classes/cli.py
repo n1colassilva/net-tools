@@ -4,9 +4,10 @@ Code pertaining to the CLI and related classes
 Handles a base cli program that is made to be reliable and flexible, some would call it a framework
 """
 
-# Note to self: move into using objects, named tuples didnt work
-from os import name
-from typing import Any, Callable, Union
+# Note to self: moved into objects
+# Note to self II: finish the TODO's in the parser
+#   mainly separate names for arg and argument
+from typing import Any, Callable
 from user_interface import display_user_prompt
 
 
@@ -30,9 +31,15 @@ class Cli:
 
         class Flag:
             def __init__(
-                self, name: str, arg_amount: int, arg_type: type[Any], help_str: str
+                self,
+                short_name: str,
+                long_name: str,
+                arg_amount: int,
+                arg_type: type[Any],
+                help_str: str,
             ) -> None:
-                self.name: str = name
+                self.short_name: str = short_name
+                self.long_name: str = long_name
                 self.arg_amount: int = arg_amount
                 self.arg_type: type[Any] = arg_type
                 self.help_str: str = help_str
@@ -77,32 +84,37 @@ class Cli:
                     arg_type (type[Any]):   Expected data type for the argument.
                     default  (Any):         Default value for the argument (optional).
             """
-            argument = {"name": name, "type": arg_type, "default": default}
+            argument = Cli.Command.Arg(name, arg_type, default)
             self.arg_data.append(argument)
 
         def set_flag(
-            self, name: tuple[str], args_amount: int, arg_type: type[Any], help_str: str
+            self,
+            short_name: str,
+            long_name: str,
+            args_amount: int,
+            arg_type: type[Any],
+            help_str: str,
         ):
             """
             Stores flag data for the command.
 
             Args:
-                    name         (tuple[str]):  One-letter flag (e.g., '-v') or long
-                                                flag (e.g., '--verbose').
-                    args_amount  (int):         Number of arguments the flag takes
-                                                (0 for no arguments).
-                    arg_type     (type[Any]):   Expected type for the flag's argument
-                                                (None if no arguments).
+                    name         (tuple[str]):  One-letter flag (e.g., '-v') or long flag (e.g., '--verbose').
+                    args_amount  (int):         Number of arguments the flag takes. 0 for no arguments.
+                    arg_type     (type[Any]):   Expected type for the flag's argument. None if no arguments.
                     help_str     (str):         Description of the flag for user reference.
 
-            Important Note: Flags with multiple arguments of different types are not supported.
-                    - If this situation arises, consider refactoring your logic or creating a
-                    separate function.
-                    - Handling such complexity within flags leads to poor maintainability and
-                    anti-patterns.
+            Important Note: Flags with multiple arguments of different types are not
+            supported.
+                    - If this situation arises, consider refactoring your logic or
+                    creating a separate function.
+                    - Handling such complexity within flags leads to poor
+                    maintainability and anti-patterns.
             """
 
-            new_flag_data = Cli.Command.Flag(name, args_amount, arg_type, help_str)
+            new_flag_data = Cli.Command.Flag(
+                short_name, long_name, args_amount, arg_type, help_str
+            )
 
             self.flag_data.append(new_flag_data)
 
@@ -155,9 +167,13 @@ class Cli:
         for arg in args:
             if arg.startswith("-") is not False:
                 for flag in command_data.flag_data:
-                    # if arg == flag
-                    ...  # flag
+                    if arg == flag.short_name or arg == flag.long_name:
+                        if flag.arg_amount is not 0:  # i <3 nested if statements
+                            # TODO: actually grab and check these
+                            ...
             else:
+                # TODO: check if it's an argument or a.. an..
+                # TODO: get different names for "arg"(abstraction) and "argument"(the actual thing)
                 ...  # Not flag
 
         # Get command arguments
