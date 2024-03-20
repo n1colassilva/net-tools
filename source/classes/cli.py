@@ -3,116 +3,108 @@ Code pertaining to the CLI and related classes
 
 Handles a base cli program that is made to be reliable and flexible, some would call it a framework
 """
-# Note to self: last thing i was working on is figuring out the type tomfoolery
-# Maybe move them into being public would solve the problem
-# Look into a better way, maybe using an object so we dont have to deal with those hoops
-# Maybe there is a way to make pylance not question our choice in having an object with no methods
-from typing import Any, Callable, Literal
+
+# Note to self: move into using objects, named tuples didnt work
+from os import name
+from typing import Any, Callable, Union
 from user_interface import display_user_prompt
 
 
-class CLI:
-    """Base class for a borrowable command-line interface."""
+class Cli:
 
-    class COMMAND:
+    class Command:
         """
-        Class to create a command with it's related data
+        Class to represent a command with its associated data.
 
-        You do need to:
-        1. Register the function
-        2. Register its arguments
-        3. Register its flags
+        You need to:
+        - Register the function to execute for the command.
+        - Register any arguments required by the command.
+        - Register any flags that can be used with the command.
 
-        The `help_str`s will be seen by the user when they ask for help
+        The `help_str` provides a description of the command for user reference.
 
         Why are flags and arguments separate?
-        - Arguments are obligatory in nature
-        - Flags are optional, some may even take arguments of their own
+        - Arguments are mandatory inputs for the command.
+        - Flags are optional and may or may not take additional arguments themselves.
         """
 
+        class Flag:
+            def __init__(
+                self, name: str, arg_amount: int, arg_type: type[Any], help_str: str
+            ) -> None:
+                self.name: str = name
+                self.arg_amount: int = arg_amount
+                self.arg_type: type[Any] = arg_type
+                self.help_str: str = help_str
+
+        class Arg:
+            def __init__(self, name: str, type: type[Any], default: Any):
+                self.name: str = name
+                self.type: type[Any] = type
+                self.default: Any = default
+
         def __init__(self) -> None:
-            self.name: str
-            # Callable takes any amount and type of arguments, returns Any
-            self.function: Callable[..., Any]
-            self.help_str: str
-            self.arg_data: list[dict[CLI.COMMAND.argument_data_indexes, str | type[Any] | Any]]
-            self.flag_data: dict[CLI.COMMAND.flag_data_indexes, Any]
+            """
+            Initiates the command variables:
+
+
+            """
+            self.name: str = ""  # Set an initial empty name
+            self.function: Callable[..., Any]  # Function to execute
+            self.help_str: str = ""  # Help description
+            self.arg_data: list[Cli.Command.Arg] = []
+            self.flag_data: list[Cli.Command.Flag] = []
 
         def set_function(self, name: str, function: Callable[..., Any], help_str: str):
             """
-            Registers the function proper
+            Registers the function to be executed for this command.
 
             Args:
-                name     (str):                 Name of the function, keep it to one word around
-                                                5-4 charachters
-                function (Callable[..., Any]):  The actual function we are working with
-                help_str (str):                 String containing help info
-
-            Example:
-                >>> kill_child_cli = Command()
-                >>> kill_child_cli.register_function("kchild", kill_child, "kills a child")
+                    name     (str):                 Name of the command, ideally one or two words.
+                    function (Callable[..., Any]):  The function to execute.
+                    help_str (str):                 Description for user reference.
             """
             self.name = name
             self.function = function
             self.help_str = help_str
 
-        argument_data_indexes=Literal[
-            "name",
-            "type",
-            "default"
-        ]
-
         def set_argument(self, name: str, arg_type: type[Any], default: Any):
             """
-            Adds an argument to the argument list
+            Adds an argument to the command's argument list.
 
             Args:
-                name     (str):         Name of the argument
-                arg_type (type[Any]):   Type the argument expects
-                default  (Any):         Default value
+                    name     (str):         Name of the argument.
+                    arg_type (type[Any]):   Expected data type for the argument.
+                    default  (Any):         Default value for the argument (optional).
             """
-            argument: dict[CLI.COMMAND.argument_data_indexes, str | type[Any] | Any] = {
-                "name": name,
-                "type": arg_type,
-                "default": default,
-            }
+            argument = {"name": name, "type": arg_type, "default": default}
             self.arg_data.append(argument)
 
-        # Creating a type so we get type hints
-        flag_data_indexes = Literal[
-            "name",
-            "amount",
-            "type",
-            "help"
-        ]
-
         def set_flag(
-            self,
-            name: tuple[str],
-            args_amount: int,
-            args_type: type[Any],
-            help_str: str,
+            self, name: tuple[str], args_amount: int, arg_type: type[Any], help_str: str
         ):
             """
-            Stores an argument
+            Stores flag data for the command.
 
             Args:
-                name             (tuple[str]):  Name of the flag (ex: `-v,--version`)
-                help             (str):         What should be printed out when the
-                help tag `-h` or `--help` is added, should cover what the argument does
+                    name         (tuple[str]):  One-letter flag (e.g., '-v') or long
+                                                flag (e.g., '--verbose').
+                    args_amount  (int):         Number of arguments the flag takes
+                                                (0 for no arguments).
+                    arg_type     (type[Any]):   Expected type for the flag's argument
+                                                (None if no arguments).
+                    help_str     (str):         Description of the flag for user reference.
+
+            Important Note: Flags with multiple arguments of different types are not supported.
+                    - If this situation arises, consider refactoring your logic or creating a
+                    separate function.
+                    - Handling such complexity within flags leads to poor maintainability and
+                    anti-patterns.
             """
-            self.flag_data: dict[CLI.COMMAND.flag_data_indexes, Any] = {
-                "name": name,
-                "amount": args_amount,
-                "type": args_type,
-                "help": help_str,
-                # "arg_types": arg_types,
-                # If you get to the point where a flag gets multiple arguments of different types
-                # You messed up big time!
-                # refactor stuff, break it up of make that thing it's own function.
-                # Even if i had the patience to handle that, it would take too much effort
-                # and complexity, and in antipattern terms it's either blatantly bad or smells bad
-            }
+
+            new_flag_data = Cli.Command.Flag(name, args_amount, arg_type, help_str)
+
+            self.flag_data.append(new_flag_data)
 
     def __init__(self, _cli_name: str):
         """
@@ -121,38 +113,22 @@ class CLI:
         Args:
             _cli_name (str): The name that will be displayed in the user promp.
         """
-        self.commands: list[CLI.COMMAND] = []
+        self.commands: list[Cli.Command] = []
         self.cli_name: str = _cli_name if _cli_name else ""
 
-    def register_command(self, command: COMMAND) -> None:
-        """
-        Saves your command into the CLI (command created by COMMAND's functions)
-
-        Args:
-            command (COMMAND): _description_
-        """
+    def register_command(self, command: Command) -> None:
+        """Saves your command into the CLI (command created by Command's functions)"""
 
         self.commands.append(command)
 
     def run(self):
-        """
-        Prompts the user for input and executes the corresponding command.
-        """
+        """Prompts the user for input and executes the corresponding command."""
 
         while True:
-            input_string = display_user_prompt(self.cli_name)
+            input_string: str = display_user_prompt(self.cli_name)
 
-            arguments = input_string.split(" ")
-            command = arguments.pop()
-
-            # No need for `and not arguments` since no command -> no arguments
-            if not command:
-                continue
-
-            if command in self.commands:
-                self.commands[command]()
-            else:
-                print(f"Error: Unknown command '{command}'.")
+            # send this to the parser
+            self.parser(input_string)
 
     def parser(self, user_input: str):
         args = user_input.split(" ")
@@ -161,23 +137,26 @@ class CLI:
         input_command = args.pop()  # First word always command
 
         # Try to find the relevant command data
-        command_data: CLI.COMMAND
+        command_data: Cli.Command | None = None
         for cmd in self.commands:
             if cmd.name == input_command:
                 command_data = cmd
                 break
             else:
                 ...
-                # TODO BIG ERROR
+                return
+                # TODO: BIG ERROR
+
+        if not isinstance(command_data, Cli.Command):  # Checking if we actually got it
+            return
 
         # Separate arguments and flags
         # we can get flags first since their syntax is more obvious
         for arg in args:
-
-            if arg.startswith("-"):
+            if arg.startswith("-") is not False:
                 for flag in command_data.flag_data:
-                    if arg == 
-                ...  # flag
+                    # if arg == flag
+                    ...  # flag
             else:
                 ...  # Not flag
 
