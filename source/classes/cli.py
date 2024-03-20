@@ -3,15 +3,18 @@ Code pertaining to the CLI and related classes
 
 Handles a base cli program that is made to be reliable and flexible, some would call it a framework
 """
-
-from typing import Any, Callable
+# Note to self: last thing i was working on is figuring out the type tomfoolery
+# Maybe move them into being public would solve the problem
+# Look into a better way, maybe using an object so we dont have to deal with those hoops
+# Maybe there is a way to make pylance not question our choice in having an object with no methods
+from typing import Any, Callable, Literal
 from user_interface import display_user_prompt
 
 
 class CLI:
     """Base class for a borrowable command-line interface."""
 
-    class Command:
+    class COMMAND:
         """
         Class to create a command with it's related data
 
@@ -32,12 +35,10 @@ class CLI:
             # Callable takes any amount and type of arguments, returns Any
             self.function: Callable[..., Any]
             self.help_str: str
-            self.arg_data: list[dict[str, str | type[Any] | Any]]
-            self.flag_data: dict[str, Any]
+            self.arg_data: list[dict[CLI.COMMAND.argument_data_indexes, str | type[Any] | Any]]
+            self.flag_data: dict[CLI.COMMAND.flag_data_indexes, Any]
 
-        def register_function(
-            self, name: str, function: Callable[..., Any], help_str: str
-        ):
+        def set_function(self, name: str, function: Callable[..., Any], help_str: str):
             """
             Registers the function proper
 
@@ -55,7 +56,13 @@ class CLI:
             self.function = function
             self.help_str = help_str
 
-        def register_argument(self, name: str, arg_type: type[Any], default: Any):
+        argument_data_indexes=Literal[
+            "name",
+            "type",
+            "default"
+        ]
+
+        def set_argument(self, name: str, arg_type: type[Any], default: Any):
             """
             Adds an argument to the argument list
 
@@ -64,14 +71,22 @@ class CLI:
                 arg_type (type[Any]):   Type the argument expects
                 default  (Any):         Default value
             """
-            argument: dict[str, str | type[Any] | Any] = {
+            argument: dict[CLI.COMMAND.argument_data_indexes, str | type[Any] | Any] = {
                 "name": name,
                 "type": arg_type,
                 "default": default,
             }
             self.arg_data.append(argument)
 
-        def register_flag(
+        # Creating a type so we get type hints
+        flag_data_indexes = Literal[
+            "name",
+            "amount",
+            "type",
+            "help"
+        ]
+
+        def set_flag(
             self,
             name: tuple[str],
             args_amount: int,
@@ -86,10 +101,10 @@ class CLI:
                 help             (str):         What should be printed out when the
                 help tag `-h` or `--help` is added, should cover what the argument does
             """
-            self.flag_data: dict[str, Any] = {
+            self.flag_data: dict[CLI.COMMAND.flag_data_indexes, Any] = {
                 "name": name,
-                "args_amount": args_amount,
-                "args_type": args_type,
+                "amount": args_amount,
+                "type": args_type,
                 "help": help_str,
                 # "arg_types": arg_types,
                 # If you get to the point where a flag gets multiple arguments of different types
@@ -106,23 +121,18 @@ class CLI:
         Args:
             _cli_name (str): The name that will be displayed in the user promp.
         """
-        self.commands: dict[str, Callable[[], None]] = {}
-
+        self.commands: list[CLI.COMMAND] = []
         self.cli_name: str = _cli_name if _cli_name else ""
 
-    def register_command(self, name: str, function: Callable[[], None]) -> None:
+    def register_command(self, command: COMMAND) -> None:
         """
-        Registers a new command with the CLI.
+        Saves your command into the CLI (command created by COMMAND's functions)
 
         Args:
-            name (str): The name of the command.
-            function (Callable[[], None]): The function to be executed for the command.
-
-        Returns:
-            None
+            command (COMMAND): _description_
         """
 
-        self.commands[name] = function
+        self.commands.append(command)
 
     def run(self):
         """
@@ -143,3 +153,34 @@ class CLI:
                 self.commands[command]()
             else:
                 print(f"Error: Unknown command '{command}'.")
+
+    def parser(self, user_input: str):
+        args = user_input.split(" ")
+
+        # Get main command
+        input_command = args.pop()  # First word always command
+
+        # Try to find the relevant command data
+        command_data: CLI.COMMAND
+        for cmd in self.commands:
+            if cmd.name == input_command:
+                command_data = cmd
+                break
+            else:
+                ...
+                # TODO BIG ERROR
+
+        # Separate arguments and flags
+        # we can get flags first since their syntax is more obvious
+        for arg in args:
+
+            if arg.startswith("-"):
+                for flag in command_data.flag_data:
+                    if arg == 
+                ...  # flag
+            else:
+                ...  # Not flag
+
+        # Get command arguments
+        # Get command flags
+        # Get flag's arguments (if it applies)
