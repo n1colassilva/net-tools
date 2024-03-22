@@ -4,9 +4,9 @@ Code pertaining to the CLI and related classes
 Handles a base cli program that is made to be reliable and flexible, some would call it a framework
 """
 
-# Note to self: moved into objects
+# Note to self: finish making the flag_args subclass, check if this structure is re- silly
 # Note to self II: finish the TODO's in the parser
-#   mainly separate names for arg and argument
+#   mainly separate names for arg and argument # Solved: class names help clarify, flag.arg and arg are inherently different, right? right?
 from typing import Any, Callable
 from user_interface import display_user_prompt
 
@@ -162,6 +162,30 @@ class Cli:
         if not isinstance(command_data, Cli.Command):  # Checking if we actually got it
             return
 
+        class Flag_data:
+            """
+            Class for storing input flags with their arguments
+            """
+
+            def __init__(
+                self, flag_type: Cli.Command.Flag, flag_args: list[str] | None
+            ):
+                self.flag_type: Cli.Command.Flag = flag_type
+                self.list_args: list[str] | None = flag_args
+
+            def _check_arg_type(self, arg: str):
+                return True if isinstance(arg, self.flag_type.arg_type) else False
+
+            def validate_all_types(self):
+
+                if self.flag_type.arg_type[0] is None and self.list_args is None:
+                    return True
+
+                for flag_arg in self.list_args:
+                    if not self._check_arg_type(flag_arg):
+                        return False
+                return True
+
         # Separate arguments and flags
         # we can get flags first since their syntax is more obvious
         for arg in args:
@@ -170,7 +194,10 @@ class Cli:
                     if arg == flag.short_name or arg == flag.long_name:
                         if flag.arg_amount is not 0:  # i <3 nested if statements
                             # TODO: actually grab and check these
+
                             ...
+                        else:
+                            ...  # do nothing
             else:
                 # TODO: check if it's an argument or a.. an..
                 # TODO: get different names for "arg"(abstraction) and "argument"(the actual thing)
