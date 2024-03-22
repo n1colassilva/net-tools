@@ -196,17 +196,15 @@ class Cli:
             if arg.startswith("-") is not False:
                 for i, flag in enumerate(command_data.flag_data):
                     if arg == flag.short_name or arg == flag.long_name:
-                        if flag.arg_amount is not 0:  # this nesting is a war crime
+                        if flag.arg_amount is not 0:
                             grabbed_flag_args: list[str] = []
                             for j in range(flag.arg_amount):
                                 grabbed_flag_args[j] = args[j + i]
-
                             # Actually putting it into the flag_data class
                             flag_list.append(Flag_data(flag, grabbed_flag_args))
+                            # This code is bad and ugly but i dont have time to fix
+                            # Hope this doesn't come back to bit me in the rear
+                            # ^ :clueless:
             else:
 
                 ...  # Not flag
-
-        # Get command arguments
-        # Get command flags
-        # Get flag's arguments (if it applies)
