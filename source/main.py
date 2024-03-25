@@ -1,4 +1,5 @@
-from tasker import task
+# from tasker import task
+from classes.cli import Cli
 import user_interface as ui
 
 
@@ -7,10 +8,11 @@ def main():
 
     ui.display_splash()  # Initial splash screen text
 
-    while True:
-
-        user_input = ui.display_user_prompt()
-        task(user_input)
+    main_cli = Cli("")
+    main_cli.run()
+    # while True:
+    # user_input = ui.display_user_prompt()
+    # task(user_input)
 
 
 if __name__ == "__main__":

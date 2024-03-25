@@ -4,11 +4,12 @@ Code pertaining to the CLI and related classes
 Handles a base cli program that is made to be reliable and flexible, some would call it a framework
 """
 
-# Note to self: Reestructure parser so it isnt barely readable
-# Note to self II: finish the TODO's in the parser
-#   mainly separate names for arg and argument # Solved: class names help clarify, flag.arg and arg are inherently different, right? right?
+# Note to self: Finish the flagdata ->convert into valid types so we dont have to do it in the parser or tasker
+# Note to self II: finish the TODO's in the parser # this will be here for a while
+# Note to self III: Reestructure parser so it isnt barely readable
 from typing import Any, Callable
 from user_interface import display_user_prompt
+from utils.console_messages import console_msg
 
 
 class Cli:
@@ -118,6 +119,42 @@ class Cli:
 
             self.flag_data.append(new_flag_data)
 
+    class FlagData:
+        """
+        Class for storing input flags with their arguments
+        """
+
+        def __init__(self, flag_type: "Cli.Command.Flag", flag_args: list[str] | None):
+            # TODO: add proper typing to flag_type
+            self.flag_type: Cli.Command.Flag = flag_type
+            self.list_args: list[str] | None = flag_args
+
+        def _check_arg_type(self, arg: str):
+            return True if isinstance(arg, self.flag_type.arg_type) else False
+
+        def validate_all_types(self):
+            """Checks the type of each flag argument"""            
+
+            if self.flag_type.arg_type[0] is None and self.list_args is None:
+                return True
+
+            if self.list_args is None:
+                return False  # TODO communicate the error better
+
+            for flag_arg in self.list_args:
+                if not self._check_arg_type(flag_arg):
+                    return False  # TODO communicate the error better
+            return True
+
+        def convert_into_valid_types(self):
+
+            if self.list_args == None: # It may be none due to flag but being an on/off thing
+                return None
+            
+            converted_args:list[Any]
+            for flag_arg in self.list_args:
+                converted_args.append(self.flag_type.arg_type[0](flag_arg))
+
     def __init__(self, _cli_name: str):
         """
         Initiates the CLI instance.
@@ -140,9 +177,15 @@ class Cli:
             input_string: str = display_user_prompt(self.cli_name)
 
             # send this to the parser
-            self.parser(input_string)
+            parsed_input = self.parser(input_string)
+            if parsed_input is None:
+                continue
+            else:
+                self.tasker(parsed_input[0], parsed_input[1], parsed_input[2])
 
-    def parser(self, user_input: str):
+    def parser(
+        self, user_input: str
+    ) -> None | tuple[Command, list[FlagData], list[str]]:
         args = user_input.split(" ")
 
         # Get main command
@@ -151,60 +194,58 @@ class Cli:
         # Try to find the relevant command data
         command_data: Cli.Command | None = None
         for cmd in self.commands:
+            console_msg("info", "fafdsafdas")
             if cmd.name == input_command:
                 command_data = cmd
                 break
             else:
-                ...
+                console_msg("error", "Uknown command")
                 return
-                # TODO: BIG ERROR
 
         if not isinstance(command_data, Cli.Command):  # Checking if we actually got it
+            console_msg(
+                "error", f"Invalid command: {input_command} is not a valid command"
+            )
+            console_msg("info", "Type `help` to learn what commands are available")
             return
 
-        class Flag_data:
-            """
-            Class for storing input flags with their arguments
-            """
-
-            def __init__(
-                self, flag_type: Cli.Command.Flag, flag_args: list[str] | None
-            ):
-                self.flag_type: Cli.Command.Flag = flag_type
-                self.list_args: list[str] | None = flag_args
-
-            def _check_arg_type(self, arg: str):
-                return True if isinstance(arg, self.flag_type.arg_type) else False
-
-            def validate_all_types(self):
-
-                if self.flag_type.arg_type[0] is None and self.list_args is None:
-                    return True
-
-                if self.list_args is None:
-                    return False  # TODO communicate the error better
-
-                for flag_arg in self.list_args:
-                    if not self._check_arg_type(flag_arg):
-                        return False  # TODO communicate the error better
-                return True
-
-        flag_list: list[Flag_data] = []
+        # If your code editor supports folding, do it to flag_data, it's only used for output
+        flag_list: list[Cli.FlagData] = []
+        arg_list: list[str] = []
         # Separate arguments and flags
         # we can get flags first since their syntax is more obvious
-        for arg in args:
-            if arg.startswith("-") is not False:
+        for h, arg in enumerate(args):
+            if arg.startswith("-") is True:  # who the hell wrote "is not false"
+                args.pop(h)  # removing the flag from the string
                 for i, flag in enumerate(command_data.flag_data):
                     if arg == flag.short_name or arg == flag.long_name:
                         if flag.arg_amount is not 0:
                             grabbed_flag_args: list[str] = []
                             for j in range(flag.arg_amount):
-                                grabbed_flag_args[j] = args[j + i]
+                                grabbed_flag_args[j] = args.pop(
+                                    j + i
+                                )  # Storing and removing flag arguments from args
                             # Actually putting it into the flag_data class
-                            flag_list.append(Flag_data(flag, grabbed_flag_args))
+                            flag_list.append(self.FlagData(flag, grabbed_flag_args))
                             # This code is bad and ugly but i dont have time to fix
-                            # Hope this doesn't come back to bit me in the rear
+                            # Hope this doesn't come back to bite me in the rear
                             # ^ :clueless:
             else:
+                arg_list.append(args[h])
 
-                ...  # Not flag
+        return command_data, flag_list, arg_list
+
+    def tasker(self, command: Command, flags: list[FlagData], args: list[str]):
+
+        # Processing Flags
+            # Type converting flags
+            # Type checking flags
+        for flag in flags:
+            result = flag.validate_all_types()
+            if result == False:
+                console_msg("error", "One or more flags' types arent valid")
+            else :
+
+        # Processing Args
+            # Type converting args
+            # Type checking args
