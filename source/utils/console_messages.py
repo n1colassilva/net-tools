@@ -22,16 +22,20 @@ def console_msg(tag: Tag, message: str) -> None:
     """
     general purpose console message printer function.
 
-    args:
+    ## args:
         tag (tag): Tag for the message
         message (str): Message string (as in what you want the console to say).
 
-    available tags:
-        hint, warning, error.
+    ## available tags:
+        - `success`: Indicates to a user that an operation was successfull, you can include more information like what was associated to what;
+        - `hint`: Usually just tells that you can use help, but can also give other hints as how to use commands better (like after a weird error);
+        - `info`: May follow success,warning or an error, indicating what went wrong where;
+        - `warning`: Indicated something will or could go wrong, not really catastrophic but the user should watch their step;
+        - `error`: Something went horribly wrong, the operation is cancelled.
     """
     # I totally didnt copy this from how termcolor is structured
-    # (tbf they used a separate types file)
-    # This looks horrendous but its just grabbing the premade tag string and shoving it in there
+    # (tbf they used a separate types file) # i dont think it justifies
+    # This looks horrendous but its just grabbing the premade tag string and shoving it in there # It's not that bad what was i thinking
     print(f"{TAGS[tag]} {message}")
 
 

@@ -10,10 +10,6 @@ def main():
 
     main_cli = Cli("")
     main_cli.run()
-    # while True:
-    # user_input = ui.display_user_prompt()
-    # task(user_input)
-
 
 if __name__ == "__main__":
     main()

@@ -4,10 +4,10 @@ Code pertaining to the CLI and related classes
 Handles a base cli program that is made to be reliable and flexible, some would call it a framework
 """
 
-# Note to self: Finish the flagdata ->convert into valid types so we dont have to do it in the parser or tasker
-# Note to self II: finish the TODO's in the parser # this will be here for a while
-# Note to self III: Reestructure parser so it isnt barely readable
-from typing import Any, Callable
+# TODO later: finish the TODO's in the parser # this will be here for a while
+# TODO Later: Reestructure parser so it isnt barely readable
+
+from typing import Any, Callable, Literal
 from user_interface import display_user_prompt
 from utils.console_messages import console_msg
 
@@ -46,9 +46,9 @@ class Cli:
                 self.help_str: str = help_str
 
         class Arg:
-            def __init__(self, name: str, type: type[Any], default: Any):
+            def __init__(self, name: str, arg_type: type[Any], default: Any):
                 self.name: str = name
-                self.type: type[Any] = type
+                self.arg_type: type[Any] = arg_type
                 self.default: Any = default
 
         def __init__(self) -> None:
@@ -125,7 +125,6 @@ class Cli:
         """
 
         def __init__(self, flag_type: "Cli.Command.Flag", flag_args: list[str] | None):
-            # TODO: add proper typing to flag_type
             self.flag_type: Cli.Command.Flag = flag_type
             self.list_args: list[str] | None = flag_args
 
@@ -133,7 +132,7 @@ class Cli:
             return True if isinstance(arg, self.flag_type.arg_type) else False
 
         def validate_all_types(self):
-            """Checks the type of each flag argument"""            
+            """Checks the type of each flag argument"""
 
             if self.flag_type.arg_type[0] is None and self.list_args is None:
                 return True
@@ -146,14 +145,33 @@ class Cli:
                     return False  # TODO communicate the error better
             return True
 
-        def convert_into_valid_types(self):
+        def convert_into_valid_types(self) -> None | list[Any] | Literal[True]:
+            """
+            Converts flag arguments to their expected types, handling empty flags for booleans.
 
-            if self.list_args == None: # It may be none due to flag but being an on/off thing
-                return None
-            
-            converted_args:list[Any]
+            Returns:
+                A list of converted flag arguments (None for empty boolean flags),
+                or None if type validation fails.
+            """
+
+            if self.flag_type.arg_amount == 0 and self.list_args is None:
+                # Empty flag for a boolean type
+                return True  # Return True for empty boolean flag
+
+            if self.list_args is None:
+                return None  # Missing argument for a non-boolean flag (error)
+
+            converted_args: list[Any] = []
+            target_type: type[Any] = self.flag_type.arg_type
+
+            # Convert each flag argument to its expected type
             for flag_arg in self.list_args:
-                converted_args.append(self.flag_type.arg_type[0](flag_arg))
+                try:
+                    converted_args.append(target_type(flag_arg))
+                except (ValueError, TypeError):
+                    return None  # Type conversion error (communicate the error better)
+
+            return converted_args
 
     def __init__(self, _cli_name: str):
         """
@@ -236,16 +254,30 @@ class Cli:
         return command_data, flag_list, arg_list
 
     def tasker(self, command: Command, flags: list[FlagData], args: list[str]):
+        """Runs the appropriate command with type converted flags and args"""
 
-        # Processing Flags
-            # Type converting flags
-            # Type checking flags
-        for flag in flags:
-            result = flag.validate_all_types()
-            if result == False:
-                console_msg("error", "One or more flags' types arent valid")
-            else :
+        # Check and convert flag types into validated_flags
+        validated_flags: list[Any] = []
+        try:
+            for flag in flags:
+                validated_flags.append(flag.convert_into_valid_types())
+        except ValueError:
+            console_msg("error", f"Invalid flag type")
+            console_msg(
+                "hint",
+                f"Check proper command arg type order using `help {command.name}`",
+            )
 
-        # Processing Args
-            # Type converting args
-            # Type checking args
+        # Processing Args into validated_args
+        validated_args: list[Any] = []
+        for i, arg in enumerate(args):
+            try:
+                validated_args.append(command.arg_data[i].arg_type[0](arg))
+            except ValueError:
+                console_msg("error", "Invalid arg type, ")
+                console_msg(
+                    "info",
+                    f"{command.arg_data[i].name} is supposed to be a {command.arg_data[i].arg_type}",
+                )
+        # Type converting args # We just convert, not our problem
+        # Type checking args   # Check previous
