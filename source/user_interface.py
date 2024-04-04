@@ -46,6 +46,7 @@ def display_user_prompt(_app_name: Optional[str] = "") -> str:
     return user_input
 
 
+# ! This will get deprecated by the Cli class
 # Show help menu
 def display_help(arguments: list[str]):
     mprint(
