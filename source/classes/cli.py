@@ -185,7 +185,6 @@ class Cli:
 
     def register_command(self, command: Command) -> None:
         """Saves your command into the CLI (command created by Command's functions)"""
-        print(f"registered {command}")
         self.commands.append(command)
 
     def run(self):
@@ -207,7 +206,7 @@ class Cli:
         args = user_input.split(" ")
 
         # Get main command
-        input_command = args.pop()  # First word always command
+        input_command = args.pop(0)  # First word (left to right) always command
 
         # Try to find the relevant command data
         command_data: Cli.Command | None = None
@@ -226,13 +225,12 @@ class Cli:
             console_msg("info", "Type `help` to learn what commands are available")
             return
 
-        # If your code editor supports folding, do it to flag_data, it's only used for output
         flag_list: list[Cli.FlagData] = []
         arg_list: list[str] = []
         # Separate arguments and flags
         # we can get flags first since their syntax is more obvious
         for h, arg in enumerate(args):
-            if arg.startswith("-") is True:  # who the hell wrote "is not false"
+            if arg.startswith("-") is True:
                 args.pop(h)  # removing the flag from the string
                 for i, flag in enumerate(command_data.flag_data):
                     if arg == flag.short_name or arg == flag.long_name:
@@ -247,6 +245,7 @@ class Cli:
                             # This code is bad and ugly but i dont have time to fix
                             # Hope this doesn't come back to bite me in the rear
                             # ^ :clueless:
+                            # Update: it did
             else:
                 arg_list.append(args[h])
 
