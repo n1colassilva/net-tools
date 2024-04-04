@@ -1,5 +1,6 @@
-from tasker import task
+from classes.cli import Cli
 import user_interface as ui
+from apps.app_register import register_all as register_apps
 
 
 def main():
@@ -7,11 +8,9 @@ def main():
 
     ui.display_splash()  # Initial splash screen text
 
-    while True:
-
-        user_input = ui.display_user_prompt()
-        task(user_input)
-
+    main_cli = Cli("")
+    register_apps(main_cli)
+    main_cli.run()
 
 if __name__ == "__main__":
     main()

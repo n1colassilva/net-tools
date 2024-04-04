@@ -14,23 +14,23 @@ class ChilTerm:
 
     def __init__(self):
         self.file_name: str = ""
-        self.APP_NAME = f"{clr('chil 󰻽','white','on_blue',['bold'])}"
-        self.display_name = self.APP_NAME
+        # self.APP_NAME = f"{clr('chil 󰻽','white','on_blue',['bold'])}"
+        # self.display_name = self.APP_NAME
 
     def run(self):
         """Main terminal loop"""
 
         # Show splash screen
-        self._splash()
+        # self._splash()
 
         keep_running = True
 
         while keep_running:
 
-            if self.file_name != "":
-                self.display_name = (
-                    self.APP_NAME + " 󰁔 " + "" + clr(self.file_name, attrs=["bold"])
-                )
+            # if self.file_name != "":
+            #     self.display_name = (
+            #         self.APP_NAME + " 󰁔 " + "" + clr(self.file_name, attrs=["bold"])
+            #     )
 
             user_input = prompt(self.display_name)
             command, arguments = input_parser(user_input)
@@ -51,17 +51,6 @@ class ChilTerm:
                 case _:
                     ...
 
-    def _splash(self) -> None:
-        """Prints chil's own splash screen"""
-        printm(
-            "'chil󰻽': Check IP List",
-            "App for managing TOML files containig an ip list",
-            "",
-            "MIT license",
-            "󰗦 Nícolas 2024",
-            "",
-            f"Type {clr('`help`','green' )} to see available commands\n",
-        )
 
     def select_file(self, file_name: str) -> None:
         """Tries to find the toml and sets it as file_name"""
@@ -105,19 +94,20 @@ class ChilTerm:
             writes data to a file, but doesn't return any value.
         """
 
-        self.display_name = (
-            self.APP_NAME
-            + " 󰁔 "
-            + clr("󰏪", "green")
-            + " "
-            + clr("" + self.file_name, "black", "on_white")
-        )
+        # self.display_name = (
+        #     self.APP_NAME
+        #     + " 󰁔 "
+        #     + clr("󰏪", "green")
+        #     + " "
+        #     + clr("" + self.file_name, "black", "on_white")
+        # )
 
         usr_dict: dict[str, str] = {}
 
         command: str = ""
         while command != "done":
-            usr_input = prompt(self.display_name)
+            # usr_input = prompt(self.display_name)
+            usr_input = prompt()
 
             command, args = input_parser(usr_input)
 
@@ -149,13 +139,13 @@ class ChilTerm:
     def remove(self) -> None:
         """Starts its own little cli to remove keys from the already picked file"""
 
-        self.display_name = (
-            self.APP_NAME
-            + " 󰁔 "
-            + clr("", "green")
-            + " "
-            + clr("" + self.file_name, "black", "on_white")
-        )
+        # self.display_name = (
+        #     self.APP_NAME
+        #     + " 󰁔 "
+        #     + clr("", "green")
+        #     + " "
+        #     + clr("" + self.file_name, "black", "on_white")
+        # )
 
         data: dict[str, dict[str, str]] | None = load_toml(self.file_name)
 
@@ -165,7 +155,8 @@ class ChilTerm:
 
         command: str = ""
         while command != "done":
-            usr_input = prompt(self.display_name)
+            # usr_input = prompt(self.display_name)
+            usr_input = prompt()
 
             command, args = input_parser(usr_input)
 

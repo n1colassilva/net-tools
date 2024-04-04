@@ -1,3 +1,4 @@
+from classes.cli import Cli
 from utils.fira_code_loading_bar.loading_bar import (
     generate_loading_bar as loading_bar,
 )
@@ -63,3 +64,14 @@ def icmp_scan(ip_addresses: list[str], verbose: bool = False, amount: int = 4) -
                 f"Packet loss: {packet_loss_percentage}%",
                 loading_bar(count - packets_lost, count, 10),
             )
+
+
+def register(Cli: Cli):
+    command = Cli.Command()
+    command.set_function(
+        "chip", icmp_scan, "Sends an ICMP request to the determined host"
+    )
+    command.set_argument("IP adresses", list[str], None)
+    command.set_flag("-v", "--verbose", 0, bool, "Sets verbose mode to `true`")
+    command.set_flag("-a", "--amount", 1, int, "Determines how many ICMP pings to send")
+    Cli.register_command(command)
