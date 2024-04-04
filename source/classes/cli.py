@@ -203,53 +203,30 @@ class Cli:
     def parser(
         self, user_input: str
     ) -> None | tuple[Command, list[FlagData], list[str]]:
-        args = user_input.split(" ")
 
-        # Get main command
-        input_command = args.pop(0)  # First word (left to right) always command
+        input_list = user_input.split(" ")
 
-        # Try to find the relevant command data
-        command_data: Cli.Command | None = None
-        for cmd in self.commands:
-            if cmd.name == input_command:
-                command_data = cmd
-                break
-            else:
-                console_msg("error", "Uknown command")
-                return
+        input_command = input_list.pop(0)
 
-        if not isinstance(command_data, Cli.Command):  # Checking if we actually got it
-            console_msg(
-                "error", f"Invalid command: {input_command} is not a valid command"
-            )
-            console_msg("info", "Type `help` to learn what commands are available")
-            return
+        command: Cli.Command
+        # Let's find the command
+        for registered_command in self.commands:
+            if input_command == registered_command.name:
+                command = registered_command
 
-        flag_list: list[Cli.FlagData] = []
-        arg_list: list[str] = []
-        # Separate arguments and flags
-        # we can get flags first since their syntax is more obvious
-        for h, arg in enumerate(args):
-            if arg.startswith("-") is True:
-                args.pop(h)  # removing the flag from the string
-                for i, flag in enumerate(command_data.flag_data):
-                    if arg == flag.short_name or arg == flag.long_name:
-                        if flag.arg_amount != 0:
-                            grabbed_flag_args: list[str] = []
-                            for j in range(flag.arg_amount):
-                                grabbed_flag_args[j] = args.pop(
-                                    j + i
-                                )  # Storing and removing flag arguments from args
-                            # Actually putting it into the flag_data class
-                            flag_list.append(self.FlagData(flag, grabbed_flag_args))
-                            # This code is bad and ugly but i dont have time to fix
-                            # Hope this doesn't come back to bite me in the rear
-                            # ^ :clueless:
-                            # Update: it did
-            else:
-                arg_list.append(args[h])
+        if : # !!! I stopped here
+            return None
 
-        return command_data, flag_list, arg_list
+        # Scary: we are going to go through all the other stuff to find what we want and need
+        for input in input_list:
+
+            # Detecting flags
+            if input.startswith("-"):
+
+                # check if they are real ones
+                for flag in command.flag_data:
+                    if input != flag:
+                        continue
 
     def tasker(self, command: Command, flags: list[FlagData], args: list[str]):
         """Runs the appropriate command with type converted flags and args"""
