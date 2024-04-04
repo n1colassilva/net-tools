@@ -185,7 +185,7 @@ class Cli:
 
     def register_command(self, command: Command) -> None:
         """Saves your command into the CLI (command created by Command's functions)"""
-
+        print(f"registered {command}")
         self.commands.append(command)
 
     def run(self):
@@ -212,7 +212,6 @@ class Cli:
         # Try to find the relevant command data
         command_data: Cli.Command | None = None
         for cmd in self.commands:
-            console_msg("info", "fafdsafdas")
             if cmd.name == input_command:
                 command_data = cmd
                 break
@@ -237,7 +236,7 @@ class Cli:
                 args.pop(h)  # removing the flag from the string
                 for i, flag in enumerate(command_data.flag_data):
                     if arg == flag.short_name or arg == flag.long_name:
-                        if flag.arg_amount is not 0:
+                        if flag.arg_amount != 0:
                             grabbed_flag_args: list[str] = []
                             for j in range(flag.arg_amount):
                                 grabbed_flag_args[j] = args.pop(
