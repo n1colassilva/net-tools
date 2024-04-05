@@ -121,7 +121,7 @@ class Cli:
 
     class FlagData:
         """
-        Class for storing input flags with their arguments
+            Class for storing input flags with their arguments
         """
 
         def __init__(self, flag_type: "Cli.Command.Flag", flag_args: list[str] | None):
@@ -173,6 +173,11 @@ class Cli:
 
             return converted_args
 
+    class CommandData:
+        def __init__(self,command,) -> None:
+            self.command = command
+        
+        
     def __init__(self, _cli_name: str):
         """
         Initiates the CLI instance.
@@ -204,18 +209,30 @@ class Cli:
         self, user_input: str
     ) -> None | tuple[Command, list[FlagData], list[str]]:
 
+        # Initializing our returns
+
+        return_command:Cli.Command
+
+        
+        # Before we even start, check if we have commands
+        if self.commands == []:
+            console_msg("error", "No commands registered, aborting")
+            return None
+
         input_list = user_input.split(" ")
 
         input_command = input_list.pop(0)
 
-        command: Cli.Command
+        command: Cli.Command | None
         # Let's find the command
+        command = None
         for registered_command in self.commands:
             if input_command == registered_command.name:
                 command = registered_command
-
-        if : # !!! I stopped here
-            return None
+                break
+        # Checking command exists
+        if command is None:
+            return
 
         # Scary: we are going to go through all the other stuff to find what we want and need
         for input in input_list:
@@ -223,10 +240,8 @@ class Cli:
             # Detecting flags
             if input.startswith("-"):
 
-                # check if they are real ones
                 for flag in command.flag_data:
-                    if input != flag:
-                        continue
+                    if flag.short_name == input or flag.long_name == input:
 
     def tasker(self, command: Command, flags: list[FlagData], args: list[str]):
         """Runs the appropriate command with type converted flags and args"""
