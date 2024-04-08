@@ -8,6 +8,8 @@ Handles a base cli program that is made to be reliable and flexible, some would 
 # TODO Later: Reestructure parser so it isnt barely readable
 
 from typing import Any, Callable, Literal
+
+from networkx import selfloop_edges
 from user_interface import display_user_prompt
 from utils.console_messages import console_msg
 
@@ -174,10 +176,30 @@ class Cli:
             return converted_args
 
     class CommandData:
-        def __init__(self,command,) -> None:
+        def __init__(self) -> None:
+            self.command:Cli.Command
+            self.flags:Cli.FlagData
+            self.args:list[Any] 
+        
+        def set_command(self,command:"Cli.Command") -> None:
             self.command = command
+
+        def get_command(self) -> "Cli.Command":
+            return self.command
         
+        def set_flags(self, flags:"Cli.FlagData") -> None:
+            self.flags = flags
         
+        def get_flags(self) -> "Cli.FlagData":
+            return self.flags
+        
+        def set_args(self, args: list[Any]) -> None:
+            self.args = args
+        
+        def get_args(self) -> list[Any]:
+            return self.args
+
+
     def __init__(self, _cli_name: str):
         """
         Initiates the CLI instance.
@@ -242,6 +264,7 @@ class Cli:
 
                 for flag in command.flag_data:
                     if flag.short_name == input or flag.long_name == input:
+                        
 
     def tasker(self, command: Command, flags: list[FlagData], args: list[str]):
         """Runs the appropriate command with type converted flags and args"""
