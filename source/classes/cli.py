@@ -127,7 +127,7 @@ class Cli:
 
         def __init__(self, flag_type: "Cli.Command.Flag", flag_args: list[str] | None):
             self.flag_type: Cli.Command.Flag = flag_type
-            self.list_args: list[str] | None = flag_args
+            self.args_list: list[str] | None = flag_args
 
         def _check_arg_type(self, arg: str):
             return True if isinstance(arg, self.flag_type.arg_type) else False
@@ -135,13 +135,13 @@ class Cli:
         def validate_all_types(self):
             """Checks the type of each flag argument"""
 
-            if self.flag_type.arg_type[0] is None and self.list_args is None:
+            if self.flag_type.arg_type[0] is None and self.args_list is None:
                 return True
 
-            if self.list_args is None:
+            if self.args_list is None:
                 return False  # TODO communicate the error better
 
-            for flag_arg in self.list_args:
+            for flag_arg in self.args_list:
                 if not self._check_arg_type(flag_arg):
                     return False  # TODO communicate the error better
             return True
@@ -155,18 +155,18 @@ class Cli:
                 or None if type validation fails.
             """
 
-            if self.flag_type.arg_amount == 0 and self.list_args is None:
+            if self.flag_type.arg_amount == 0 and self.args_list is None:
                 # Empty flag for a boolean type
                 return True  # Return True for empty boolean flag
 
-            if self.list_args is None:
+            if self.args_list is None:
                 return None  # Missing argument for a non-boolean flag (error)
 
             converted_args: list[Any] = []
             target_type: type[Any] = self.flag_type.arg_type
 
             # Convert each flag argument to its expected type
-            for flag_arg in self.list_args:
+            for flag_arg in self.args_list:
                 try:
                     converted_args.append(target_type(flag_arg))
                 except (ValueError, TypeError):
@@ -262,29 +262,4 @@ class Cli:
         return return_command
 
     def tasker(self, command: Command, flags: list[FlagData], args: list[str]):
-        """Runs the appropriate command with type converted flags and args"""
-
-        # Check and convert flag types into validated_flags
-        validated_flags: list[Any] = []
-        try:
-            for flag in flags:
-                validated_flags.append(flag.convert_into_valid_types())
-        except ValueError:
-            console_msg("error", f"Invalid flag type")
-            console_msg(
-                "hint",
-                f"Check proper command arg type order using `help {command.name}`",
-            )
-
-        # Processing Args into validated_args
-        validated_args: list[Any] = []
-        for i, arg in enumerate(args):
-            try:
-                validated_args.append(command.arg_data[i].arg_type[0](arg))
-            except ValueError:
-                console_msg("error", "Invalid arg type, ")
-                console_msg(
-                    "info",
-                    f"{command.arg_data[i].name} is supposed to be a {command.arg_data[i].arg_type}",
-                )
-        # Type converting args # We just convert, not our problem
+        """Finds the right command's run function and passed the arguments to that"""
