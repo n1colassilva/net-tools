@@ -9,7 +9,6 @@ Handles a base cli program that is made to be reliable and flexible, some would 
 
 from typing import Any, Callable, Literal
 
-from networkx import selfloop_edges
 from user_interface import display_user_prompt
 from utils.console_messages import console_msg
 
@@ -123,7 +122,7 @@ class Cli:
 
     class FlagData:
         """
-            Class for storing input flags with their arguments
+        Class for storing input flags with their arguments
         """
 
         def __init__(self, flag_type: "Cli.Command.Flag", flag_args: list[str] | None):
@@ -177,28 +176,9 @@ class Cli:
 
     class CommandData:
         def __init__(self) -> None:
-            self.command:Cli.Command
-            self.flags:Cli.FlagData
-            self.args:list[Any] 
-        
-        def set_command(self,command:"Cli.Command") -> None:
-            self.command = command
-
-        def get_command(self) -> "Cli.Command":
-            return self.command
-        
-        def set_flags(self, flags:"Cli.FlagData") -> None:
-            self.flags = flags
-        
-        def get_flags(self) -> "Cli.FlagData":
-            return self.flags
-        
-        def set_args(self, args: list[Any]) -> None:
-            self.args = args
-        
-        def get_args(self) -> list[Any]:
-            return self.args
-
+            self.command: Cli.Command
+            self.flags: list[Cli.FlagData]
+            self.args: list[Any]
 
     def __init__(self, _cli_name: str):
         """
@@ -227,15 +207,12 @@ class Cli:
             else:
                 self.tasker(parsed_input[0], parsed_input[1], parsed_input[2])
 
-    def parser(
-        self, user_input: str
-    ) -> None | tuple[Command, list[FlagData], list[str]]:
+    def parser(self, user_input: str) -> CommandData | None:
 
         # Initializing our returns
 
-        return_command:Cli.Command
+        return_command = Cli.CommandData()
 
-        
         # Before we even start, check if we have commands
         if self.commands == []:
             console_msg("error", "No commands registered, aborting")
@@ -257,14 +234,32 @@ class Cli:
             return
 
         # Scary: we are going to go through all the other stuff to find what we want and need
-        for input in input_list:
+        for i, input in enumerate(input_list):
 
             # Detecting flags
             if input.startswith("-"):
 
                 for flag in command.flag_data:
                     if flag.short_name == input or flag.long_name == input:
-                        
+                        # Found a match, grabbing args if any
+                        flag_args: list[str] = []
+                        if flag.arg_amount > 0:
+                            # There are args, let's grab them
+                            for flag_arg in range(flag.arg_amount):
+                                flag_args.append(input_list.pop(i + flag_arg))
+
+                        return_command.flags.append(Cli.FlagData(flag, flag_args))
+
+                        # We are done here, prepare to get out
+                        # input_list.pop(i) # Not sure this will be necessary
+                        break
+                    else:
+                        console_msg("error", "Invalid flag")
+                        return None
+            else:  # It's an argument
+                return_command.args.append(input)
+
+        return return_command
 
     def tasker(self, command: Command, flags: list[FlagData], args: list[str]):
         """Runs the appropriate command with type converted flags and args"""
