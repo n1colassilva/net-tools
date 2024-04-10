@@ -205,7 +205,7 @@ class Cli:
             if parsed_input is None:
                 continue
             else:
-                self.tasker(parsed_input[0], parsed_input[1], parsed_input[2])
+                self.tasker(parsed_input.command, parsed_input.flags, parsed_input.args)
 
     def parser(self, user_input: str) -> CommandData | None:
 
@@ -288,4 +288,3 @@ class Cli:
                     f"{command.arg_data[i].name} is supposed to be a {command.arg_data[i].arg_type}",
                 )
         # Type converting args # We just convert, not our problem
-        # Type checking args   # Check previous
