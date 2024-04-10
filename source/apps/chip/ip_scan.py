@@ -1,4 +1,5 @@
 from classes.cli import Cli
+from utils.console_messages import console_msg
 from utils.fira_code_loading_bar.loading_bar import (
     generate_loading_bar as loading_bar,
 )
@@ -75,3 +76,44 @@ def register(Cli: Cli):
     command.set_flag("-v", "--verbose", 0, bool, "Sets verbose mode to `true`")
     command.set_flag("-a", "--amount", 1, int, "Determines how many ICMP pings to send")
     Cli.register_command(command)
+
+
+def run(data: Cli.CommandData):
+    """Runs the icmp_scan function, the arguments are passed by the Cli's tasker"""
+
+    # detecting our flags
+    verbose: bool = False
+    amount: int = 4
+    # The function specifies these as defaults but we are also doing them here to be sure
+    for flag in data.flags:
+        match flag.flag_type.long_name.lower():
+            case "--verbose":
+                verbose = True
+                data.flags.pop()
+                continue
+            case "--amount":
+                if flag.args_list is None:
+                    console_msg(
+                        "error",
+                        "No amount of pings specified, continuing with default of 4",
+                    )
+                    break
+                if flag.args_list[0] is 0:
+                    console_msg(
+                        "error",
+                        "Why would you ask for 0 pings, continuing with default of 4",
+                    )
+                    break
+                try:
+                    amount = int(flag.args_list[0])
+                except ValueError:
+                    console_msg(
+                        "error", "Type error: Amount expects an integer, continuing"
+                    )
+                    console_msg(
+                        "hint", "Use `help chip` to learn how each argument works"
+                    )
+            case _:
+                console_msg("error", f"Nonexistant flag detected, aborting")
+                return
+    icmp_scan(data.args, verbose, amount)
