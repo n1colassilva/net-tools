@@ -59,22 +59,29 @@ class Cli:
 
             """
             self.name: str = ""  # Set an initial empty name
-            self.function: Callable[..., Any]  # Function to execute
+            self.runner_function: Callable[
+                [Cli.CommandData], None
+            ]  # Function to execute
             self.help_str: str = ""  # Help description
             self.arg_data: list[Cli.Command.Arg] = []
             self.flag_data: list[Cli.Command.Flag] = []
 
-        def set_function(self, name: str, function: Callable[..., Any], help_str: str):
+        def set_function(
+            self,
+            name: str,
+            function: Callable[["Cli.CommandData"], None],
+            help_str: str,
+        ):
             """
             Registers the function to be executed for this command.
 
             Args:
-                    name     (str):                 Name of the command, ideally one or two words.
-                    function (Callable[..., Any]):  The function to execute.
-                    help_str (str):                 Description for user reference.
+                    name     (str):                                 Name of the command,ideally one or two words.
+                    function (Callable[[Cli.CommandData], None]):   The function to execute.
+                    help_str (str):                                 Description for user reference.
             """
             self.name = name
-            self.function = function
+            self.runner_function = function
             self.help_str = help_str
 
         def set_argument(self, name: str, arg_type: type[Any], default: Any):
@@ -193,6 +200,7 @@ class Cli:
     def register_command(self, command: Command) -> None:
         """Saves your command into the CLI (command created by Command's functions)"""
         self.commands.append(command)
+        print(self.commands[0].name)
 
     def run(self):
         """Prompts the user for input and executes the corresponding command."""
@@ -201,7 +209,7 @@ class Cli:
             input_string: str = display_user_prompt(self.cli_name)
 
             # send this to the parser
-            parsed_input = self.parser(input_string)
+            parsed_input: Cli.CommandData | None = self.parser(input_string)
             if parsed_input is None:
                 continue
             else:
@@ -221,6 +229,7 @@ class Cli:
         input_list = user_input.split(" ")
 
         input_command = input_list.pop(0)
+        print(f"parser input command {input_command}")
 
         command: Cli.Command | None
         # Let's find the command
@@ -231,7 +240,13 @@ class Cli:
                 break
         # Checking command exists
         if command is None:
-            return
+            return None
+
+        # Set the command
+        return_command.command = command
+        # Might as well initialize everything
+        return_command.flags = []
+        return_command.args = []
 
         # Scary: we are going to go through all the other stuff to find what we want and need
         for i, input in enumerate(input_list):

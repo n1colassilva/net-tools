@@ -1,5 +1,5 @@
 from apps.chil.check_ip_list import ChilTerm
-from apps.chip.ip_scan import icmp_scan
+from apps.chip.ip_scan import run
 from user_interface import display_help
 from utils.console_messages import console_msg
 from utils.input_parser import input_parser
@@ -42,7 +42,7 @@ def task(usr_input: str):
 
                 i += 1
 
-            icmp_scan(ip_addresses, verbose, amount)
+            run(ip_addresses, verbose, amount)
         case "chil":
             chilterm = ChilTerm()
             chilterm.run()

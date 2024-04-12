@@ -26,7 +26,7 @@ def _send_ping_request(destination_ip: str, count: int = 4, timeout: int = 30):
     return destination_ip, count, received_packets, packet_loss, packet_loss_percentage
 
 
-def icmp_scan(ip_addresses: list[str], verbose: bool = False, amount: int = 4) -> None:
+def ping_ip(ip_addresses: list[str], verbose: bool = False, amount: int = 4) -> None:
     """
     Sends an ICMP echo request to the designated adress(es)
 
@@ -69,9 +69,7 @@ def icmp_scan(ip_addresses: list[str], verbose: bool = False, amount: int = 4) -
 
 def register(Cli: Cli):
     command = Cli.Command()
-    command.set_function(
-        "chip", icmp_scan, "Sends an ICMP request to the determined host"
-    )
+    command.set_function("chip", run, "Sends an ICMP request to the determined host")
     command.set_argument("IP adresses", list[str], None)
     command.set_flag("-v", "--verbose", 0, bool, "Sets verbose mode to `true`")
     command.set_flag("-a", "--amount", 1, int, "Determines how many ICMP pings to send")
@@ -84,7 +82,7 @@ def run(data: Cli.CommandData):
     # detecting our flags
     verbose: bool = False
     amount: int = 4
-    # The function specifies these as defaults but we are also doing them here to be sure
+    # The function specifies these defaults but we are also setting them here to be sure
     for flag in data.flags:
         match flag.flag_type.long_name.lower():
             case "--verbose":
@@ -98,7 +96,7 @@ def run(data: Cli.CommandData):
                         "No amount of pings specified, continuing with default of 4",
                     )
                     break
-                if flag.args_list[0] is 0:
+                if flag.args_list[0] == "0":
                     console_msg(
                         "error",
                         "Why would you ask for 0 pings, continuing with default of 4",
@@ -116,4 +114,5 @@ def run(data: Cli.CommandData):
             case _:
                 console_msg("error", f"Nonexistant flag detected, aborting")
                 return
-    icmp_scan(data.args, verbose, amount)
+    # Everything should be set
+    ping_ip(data.args, verbose, amount)
