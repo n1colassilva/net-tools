@@ -67,15 +67,6 @@ def ping_ip(ip_addresses: list[str], verbose: bool = False, amount: int = 4) -> 
             )
 
 
-def register(Cli: Cli):
-    command = Cli.Command()
-    command.set_function("chip", run, "Sends an ICMP request to the determined host")
-    command.set_argument("IP adresses", list[str], None)
-    command.set_flag("-v", "--verbose", 0, bool, "Sets verbose mode to `true`")
-    command.set_flag("-a", "--amount", 1, int, "Determines how many ICMP pings to send")
-    Cli.register_command(command)
-
-
 def run(data: Cli.CommandData):
     """Runs the icmp_scan function, the arguments are passed by the Cli's tasker"""
 
@@ -116,3 +107,13 @@ def run(data: Cli.CommandData):
                 return
     # Everything should be set
     ping_ip(data.args, verbose, amount)
+
+
+def register(Cli: Cli):
+    command = Cli.Command()
+    command.set_function("chip", run, "Sends an ICMP request to the determined host")
+    command.set_argument("IP adresses", list[str], None)
+    command.set_flag("-v", "--verbose", 0, bool, "Sets verbose mode to `true`")
+    command.set_flag("-a", "--amount", 1, int, "Determines how many ICMP pings to send")
+    Cli.register_command(command)
+
