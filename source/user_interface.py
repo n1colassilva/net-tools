@@ -1,6 +1,6 @@
 import getpass
 import os
-from typing import Optional
+from typing import NoReturn, Optional
 from termcolor import colored as clr
 from utils.manyprint.mprint import multi_print as mprint
 
@@ -11,7 +11,7 @@ VERSION_NAME = f"{clr('Alpha', 'green', attrs=['bold'])}"
 # Show splash screen
 def display_splash():
     """Prints out the splash screen"""
-    print(clr("* NET TOOLS *", "black", "on_white", ["bold"]))
+    print(clr("* NET TOOLS *", "grey", "on_white", ["bold"]))
     print(f"Version {VERSION_NUMBER} {VERSION_NAME}")
     print("")
     print("MIT license")
@@ -38,12 +38,26 @@ def display_user_prompt(_app_name: Optional[str] = "") -> str:
         " @ "
         f"{clr(domain,'magenta',attrs=['bold'])}"
     )
-    print(_app_name, "> ", end="")
+    print(_app_name, "\r> ", end="")
 
-    user_input = input()
-    print("")
+    try:
+        user_input = input()
+    except KeyboardInterrupt:
+        display_exit()
+    print("\n")
 
     return user_input
+
+
+def display_exit() -> NoReturn:
+    mprint(
+        "\rExiting...",
+        "",
+        f"Net-tools {VERSION_NUMBER} {VERSION_NAME}",
+        "",
+        "Exited with control-c",
+    )
+    exit(code=0)
 
 
 # ! This will get deprecated by the Cli class
