@@ -200,7 +200,6 @@ class Cli:
     def register_command(self, command: Command) -> None:
         """Saves your command into the CLI (command created by Command's functions)"""
         self.commands.append(command)
-        print(self.commands[0].name)
 
     def run(self):
         """Prompts the user for input and executes the corresponding command."""
@@ -213,9 +212,18 @@ class Cli:
             if parsed_input is None:
                 continue
             else:
-                self.tasker(parsed_input.command, parsed_input.flags, parsed_input.args)
+                self.tasker(parsed_input)
 
     def parser(self, user_input: str) -> CommandData | None:
+        """
+        Separates the user input into its constituent parts and returns a CommandData object containing, well, the command data (as in the command type, the args and flags and the flag args)
+
+        Args:
+            user_input (str): What the user wrote down.
+
+        Returns:
+            CommandData | None: The parsed input
+        """
 
         # Initializing our returns
 
@@ -229,7 +237,6 @@ class Cli:
         input_list = user_input.split(" ")
 
         input_command = input_list.pop(0)
-        print(f"parser input command {input_command}")
 
         command: Cli.Command | None
         # Let's find the command
@@ -276,5 +283,12 @@ class Cli:
 
         return return_command
 
-    def tasker(self, command: Command, flags: list[FlagData], args: list[str]):
-        """Finds the right command's run function and passed the arguments to that"""
+    def tasker(self, command_data: "Cli.CommandData") -> None:
+        """
+        Recieves a CommandData object and runs the command's registered runner for yet another round of parsing
+
+        Args:
+            command_data (Cli.CommandData): the CommandData created by the Cli.parser function.
+        """
+
+        command_data.command.runner_function(command_data)
