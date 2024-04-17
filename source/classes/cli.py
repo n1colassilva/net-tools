@@ -8,8 +8,6 @@ Handles a base cli program that is made to be reliable and flexible, some would 
 # TODO Later: Reestructure parser so it isnt barely readable
 
 from typing import Any, Callable, Literal
-from xxlimited import foo
-
 from user_interface import display_user_prompt
 from utils.console_messages import console_msg
 
@@ -256,6 +254,8 @@ class Cli:
         return_command.flags = []
         return_command.args = []
 
+        used_flags: list[Cli.Command.Flag] = []  # use short names for convinence
+
         # Scary: we are going to go through all the other stuff to find what we want and need
         for i, input in enumerate(input_list):
             # Detecting flags
@@ -264,8 +264,8 @@ class Cli:
                     if (
                         flag.short_name.lower() == input.lower()
                         or flag.long_name.lower() == input.lower()
+                        and flag not in used_flags
                     ):
-                        print(flag.short_name)
                         # Found a match, grabbing args if any
                         flag_args: list[str] = []
                         if flag.arg_amount > 0:
@@ -276,7 +276,10 @@ class Cli:
                         return_command.flags.append(Cli.FlagData(flag, flag_args))
 
                         # We are done here, prepare to get out
-                        input_list.pop(i)  # Not sure this will be necessary
+                        used_flags.append(
+                            flag
+                        )  # Storing so we dont have to process again
+                        # input_list.pop(i)  # Not sure this will be necessary
                     # else:
                     #     console_msg("error", "Invalid flag")
             else:  # It's an argument
