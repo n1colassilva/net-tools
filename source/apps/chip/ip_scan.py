@@ -1,4 +1,5 @@
 from classes.cli import Cli
+from classes.ip import IPAddress
 from utils.console_messages import console_msg
 from utils.fira_code_loading_bar.loading_bar import (
     generate_loading_bar as loading_bar,
@@ -11,6 +12,10 @@ def _send_ping_request(destination_ip: str, count: int = 4, timeout: int = 30):
     received_packets = 0
     packet_loss = 0
 
+    adress = IPAddress(destination_ip)
+    if not adress.is_valid():
+        console_msg("error", f"Invalid IP adress '{adress}, aborting")
+        return None
     for _ in range(count):
         response = ping(destination_ip, timeout=timeout)
 
@@ -36,13 +41,17 @@ def ping_ip(ip_addresses: list[str], verbose: bool = False, amount: int = 4) -> 
         amount (int, optional): Use in case you ever want to send more packets. Defaults to 4.
     """
     for ip in ip_addresses:
-        (
-            destination_ip,
-            count,
-            received_packets,
-            packets_lost,
-            packet_loss_percentage,
-        ) = _send_ping_request(ip, amount)
+        result = _send_ping_request(ip, amount)
+        if result is None:
+            return  # _send_ping_request handles this
+        else:
+            (
+                destination_ip,
+                count,
+                received_packets,
+                packets_lost,
+                packet_loss_percentage,
+            ) = result
 
         # printing the result
         if verbose is True:
@@ -55,7 +64,7 @@ def ping_ip(ip_addresses: list[str], verbose: bool = False, amount: int = 4) -> 
                 f"Recieved: {received_packets}",
                 f"Packets lost: {packets_lost}",
                 f"Packet loss: {packet_loss_percentage}%",
-                loading_bar(count - packets_lost, count, 10),
+                loading_bar(count - packets_lost, count, 30),
             )
         else:
             printm(
@@ -63,7 +72,7 @@ def ping_ip(ip_addresses: list[str], verbose: bool = False, amount: int = 4) -> 
                 "RESULTS",
                 f"Pinged: {destination_ip}",
                 f"Packet loss: {packet_loss_percentage}%",
-                loading_bar(count - packets_lost, count, 10),
+                loading_bar(count - packets_lost, count, 30),
             )
 
 
@@ -78,7 +87,7 @@ def run(data: Cli.CommandData):
         match flag.flag_type.long_name.lower():
             case "--verbose":
                 verbose = True
-                data.flags.pop()
+                # data.flags.pop()
                 continue
             case "--amount":
                 if flag.args_list is None:
@@ -86,17 +95,16 @@ def run(data: Cli.CommandData):
                         "error",
                         "No amount of pings specified, continuing with default of 4",
                     )
-                    break
+                    continue
                 if flag.args_list[0] == "0":
                     console_msg(
                         "error",
                         "Why would you ask for 0 pings, continuing with default of 4",
                     )
-                    break
+                    continue
                 try:
                     amount = int(flag.args_list[0])
                 except ValueError:
-                    print(f"Amoug os : {flag.args_list[0]}")
                     console_msg(
                         "error", "Type error: Amount expects an integer, continuing"
                     )
