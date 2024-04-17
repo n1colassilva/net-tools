@@ -4,7 +4,7 @@ from typing import NoReturn, Optional
 from termcolor import colored as clr
 from utils.manyprint.mprint import multi_print as mprint
 
-VERSION_NUMBER = "0.0.3"
+VERSION_NUMBER = "0.0.5"
 VERSION_NAME = f"{clr('Alpha', 'green', attrs=['bold'])}"
 
 
