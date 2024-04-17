@@ -96,6 +96,7 @@ def run(data: Cli.CommandData):
                 try:
                     amount = int(flag.args_list[0])
                 except ValueError:
+                    print(f"Amoug os : {flag.args_list[0]}")
                     console_msg(
                         "error", "Type error: Amount expects an integer, continuing"
                     )
@@ -113,7 +114,6 @@ def register(Cli: Cli):
     command = Cli.Command()
     command.set_function("chip", run, "Sends an ICMP request to the determined host")
     command.set_argument("IP adresses", list[str], None)
-    command.set_flag("-v", "--verbose", 0, bool, "Sets verbose mode to `true`")
     command.set_flag("-a", "--amount", 1, int, "Determines how many ICMP pings to send")
+    command.set_flag("-v", "--verbose", 0, bool, "Sets verbose mode to `true`")
     Cli.register_command(command)
-

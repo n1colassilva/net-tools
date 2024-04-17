@@ -8,6 +8,7 @@ Handles a base cli program that is made to be reliable and flexible, some would 
 # TODO Later: Reestructure parser so it isnt barely readable
 
 from typing import Any, Callable, Literal
+from xxlimited import foo
 
 from user_interface import display_user_prompt
 from utils.console_messages import console_msg
@@ -257,27 +258,27 @@ class Cli:
 
         # Scary: we are going to go through all the other stuff to find what we want and need
         for i, input in enumerate(input_list):
-
             # Detecting flags
             if input.startswith("-"):
-
                 for flag in command.flag_data:
-                    if flag.short_name == input or flag.long_name == input:
+                    if (
+                        flag.short_name.lower() == input.lower()
+                        or flag.long_name.lower() == input.lower()
+                    ):
+                        print(flag.short_name)
                         # Found a match, grabbing args if any
                         flag_args: list[str] = []
                         if flag.arg_amount > 0:
                             # There are args, let's grab them
-                            for flag_arg in range(flag.arg_amount):
-                                flag_args.append(input_list.pop(i + flag_arg))
+                            for flag_arg_n in range(flag.arg_amount):
+                                flag_args.append(input_list.pop(i + flag_arg_n + 1))
 
                         return_command.flags.append(Cli.FlagData(flag, flag_args))
 
                         # We are done here, prepare to get out
-                        # input_list.pop(i) # Not sure this will be necessary
-                        break
-                    else:
-                        console_msg("error", "Invalid flag")
-                        return None
+                        input_list.pop(i)  # Not sure this will be necessary
+                    # else:
+                    #     console_msg("error", "Invalid flag")
             else:  # It's an argument
                 return_command.args.append(input)
 
