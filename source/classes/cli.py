@@ -270,8 +270,15 @@ class Cli:
                         flag_args: list[str] = []
                         if flag.arg_amount > 0:
                             # There are args, let's grab them
+                            # *try to
                             for flag_arg_n in range(flag.arg_amount):
-                                flag_args.append(input_list.pop(i + flag_arg_n + 1))
+                                try:
+                                    flag_args.append(input_list.pop(i + flag_arg_n + 1))
+                                except IndexError:
+                                    console_msg(
+                                        "error", "Insufficient flag arguments, aborting"
+                                    )
+                                    return None
 
                         return_command.flags.append(Cli.FlagData(flag, flag_args))
 
