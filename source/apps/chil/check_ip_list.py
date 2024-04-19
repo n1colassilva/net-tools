@@ -32,7 +32,7 @@ class ChilTerm:
             #         self.APP_NAME + " 󰁔 " + "" + clr(self.file_name, attrs=["bold"])
             #     )
 
-            user_input = prompt(self.display_name)
+            user_input = prompt()
             command, arguments = input_parser(user_input)
 
             match command:
@@ -50,7 +50,6 @@ class ChilTerm:
                     self.drop(arguments[0])
                 case _:
                     ...
-
 
     def select_file(self, file_name: str) -> None:
         """Tries to find the toml and sets it as file_name"""

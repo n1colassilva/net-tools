@@ -16,9 +16,12 @@ Instructions:
 3. Add the register function to the apps list.
 """
 from .chip import ip_scan as ipscan
+from .help import help
 
 apps: list[Callable[[Cli], None]] = [
     ipscan.register,
+    help.register_command_help,
+    help.register_show_help,
 ]
 
 
