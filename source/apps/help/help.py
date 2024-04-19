@@ -10,7 +10,7 @@ from classes.cli import Cli
 from utils.console_messages import console_msg
 
 
-def show_help(cli: Cli):
+def show_help(cli: Cli, _command_data:Cli.CommandData):
     """Shows the help for all registered commands in the Cli."""
 
     print("Net-tools is a cli tool for simple network analisys\n")
@@ -19,9 +19,10 @@ def show_help(cli: Cli):
         print(command.help_str)
 
 
-def command_help(cli: Cli, input_command: str):
+def command_help(cli: Cli, command_data:Cli.CommandData):
     """Shows the help for a specific command."""
 
+    input_command = command_data.args[0]
     # Finding the command
     command = None  # We don't know what it is yet
 
@@ -37,7 +38,7 @@ def command_help(cli: Cli, input_command: str):
     print(f"{command.name}\t{command.help_str}")
 
     for arg in command.arg_data:
-        print(f"\t{arg.name} ({arg.arg_type[0]})")
+        print(f"\t{arg.name} ({(arg.arg_type[0])})")
 
     for flag in command.flag_data:
         print(f"\t{flag.short_name}/{flag.long_name}\t{flag.help_str}")
@@ -62,10 +63,12 @@ def register_show_help(cli: Cli):
 
 
 def register_command_help(cli: Cli):
-    """Regsiters the command help function."""
+    """Registers the command help function."""
 
     command = Cli.Command()
     command.set_function(
         "info", command_help, "Shows information on how a command works"
     )
     command.set_argument("command name", str, "")
+    cli.register_command(command)
+

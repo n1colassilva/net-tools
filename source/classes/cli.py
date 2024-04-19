@@ -59,7 +59,7 @@ class Cli:
             """
             self.name: str = ""  # Set an initial empty name
             self.runner_function: Callable[
-                [Cli.CommandData], None
+                [Cli, Cli.CommandData], None
             ]  # Function to execute
             self.help_str: str = ""  # Help description
             self.arg_data: list[Cli.Command.Arg] = []
@@ -68,7 +68,7 @@ class Cli:
         def set_function(
             self,
             name: str,
-            function: Callable[["Cli.CommandData"], None],
+            function: Callable[["Cli", "Cli.CommandData"], None],
             help_str: str,
         ):
             """
@@ -211,7 +211,7 @@ class Cli:
             if parsed_input is None:
                 continue
             else:
-                self.tasker(parsed_input)
+                self.tasker(parsed_input, self)
 
     def parser(self, user_input: str) -> CommandData | None:
         """
@@ -294,7 +294,7 @@ class Cli:
 
         return return_command
 
-    def tasker(self, command_data: "Cli.CommandData") -> None:
+    def tasker(self, command_data: "Cli.CommandData", cli:"Cli") -> None:
         """
         Recieves a CommandData object and runs the command's registered runner for yet another round of parsing
 
@@ -302,4 +302,4 @@ class Cli:
             command_data (Cli.CommandData): the CommandData created by the Cli.parser function.
         """
 
-        command_data.command.runner_function(command_data)
+        command_data.command.runner_function(cli,command_data)

@@ -1,4 +1,3 @@
-from socket import timeout
 from classes.cli import Cli
 from classes.ip import IPAddress
 from utils.console_messages import console_msg
@@ -6,7 +5,7 @@ from utils.fira_code_loading_bar.loading_bar import (
     generate_loading_bar as loading_bar,
 )
 from utils.manyprint.mprint import multi_print as printm
-from ping3 import ping  # TODO make pylance stop complaining about lack of a stub
+from ping3 import ping  # type: ignore # TODO make pylance stop complaining about lack of a stub
 
 
 def _send_ping_request(
@@ -109,7 +108,7 @@ def ping_ip(
             )
 
 
-def run(data: Cli.CommandData):
+def run(_cli: Cli, data: Cli.CommandData):
     """Runs the icmp_scan function, the arguments are passed by the Cli's tasker"""
 
     # detecting our flags
